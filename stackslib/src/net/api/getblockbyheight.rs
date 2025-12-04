@@ -21,9 +21,9 @@ use stacks_common::types::net::PeerHost;
 use crate::chainstate::stacks::Error as ChainError;
 use crate::net::api::getblock_v3::NakamotoBlockStream;
 use crate::net::http::{
-    parse_bytes, Error, HttpContentType, HttpNotFound, HttpRequest, HttpRequestContents,
-    HttpRequestPreamble, HttpResponse, HttpResponseContents, HttpResponsePayload,
-    HttpResponsePreamble, HttpServerError,
+    parse_bytes, Error, HttpBadRequest, HttpContentType, HttpNotFound, HttpRequest,
+    HttpRequestContents, HttpRequestPreamble, HttpResponse, HttpResponseContents,
+    HttpResponsePayload, HttpResponsePreamble, HttpServerError,
 };
 use crate::net::httpcore::{
     HttpRequestContentsExtensions as _, RPCRequestHandler, StacksHttpRequest, StacksHttpResponse,
@@ -103,6 +103,18 @@ impl RPCRequestHandler for RPCNakamotoBlockByHeightRequestHandler {
             .block_height
             .take()
             .ok_or(NetError::SendError("Missing `block_height`".into()))?;
+
+        // Validate block_height is within u32 range (required by MARF)
+        if block_height > u32::MAX as u64 {
+            let msg = format!(
+                "Invalid block height {}: must be <= {}",
+                block_height,
+                u32::MAX
+            );
+            return StacksHttpResponse::new_error(&preamble, &HttpBadRequest::new(msg))
+                .try_into_contents()
+                .map_err(NetError::from);
+        }
 
         let tip = match node.load_stacks_chain_tip(&preamble, &contents) {
             Ok(tip) => tip,

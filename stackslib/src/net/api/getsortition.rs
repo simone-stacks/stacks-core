@@ -30,8 +30,9 @@ use crate::chainstate::nakamoto::{NakamotoChainState, StacksDBIndexed};
 use crate::chainstate::stacks::db::StacksChainState;
 use crate::chainstate::stacks::Error as ChainError;
 use crate::net::http::{
-    parse_json, Error, HttpNotFound, HttpRequest, HttpRequestContents, HttpRequestPreamble,
-    HttpResponse, HttpResponseContents, HttpResponsePayload, HttpResponsePreamble, HttpServerError,
+    parse_json, Error, HttpBadRequest, HttpNotFound, HttpRequest, HttpRequestContents,
+    HttpRequestPreamble, HttpResponse, HttpResponseContents, HttpResponsePayload,
+    HttpResponsePreamble, HttpServerError,
 };
 use crate::net::httpcore::{RPCRequestHandler, StacksHttpRequest, StacksHttpResponse};
 use crate::net::{Error as NetError, StacksNodeState};
@@ -307,6 +308,20 @@ impl RPCRequestHandler for GetSortitionHandler {
         _contents: HttpRequestContents,
         node: &mut StacksNodeState,
     ) -> Result<(HttpResponsePreamble, HttpResponseContents), NetError> {
+        // Validate block height is within u32 range (required by MARF)
+        if let QuerySpecifier::BlockHeight(height) = &self.query {
+            if *height > u32::MAX as u64 {
+                let msg = format!(
+                    "Invalid block height {}: must be <= {}",
+                    height,
+                    u32::MAX
+                );
+                return StacksHttpResponse::new_error(&preamble, &HttpBadRequest::new(msg))
+                    .try_into_contents()
+                    .map_err(NetError::from);
+            }
+        }
+
         let result = node.with_node_state(|network, sortdb, chainstate, _mempool, _rpc_args| {
             let query_result = match self.query {
                 QuerySpecifier::Latest => Ok(Some(network.burnchain_tip.clone())),

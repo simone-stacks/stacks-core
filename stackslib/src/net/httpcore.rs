@@ -47,8 +47,8 @@ use crate::net::connection::{ConnectionOptions, NetworkConnection};
 use crate::net::http::common::{parse_raw_bytes, HTTP_PREAMBLE_MAX_ENCODED_SIZE};
 use crate::net::http::{
     http_reason, parse_bytes, parse_json, Error as HttpError, HttpContentType, HttpErrorResponse,
-    HttpNotFound, HttpRequest, HttpRequestContents, HttpRequestPreamble, HttpResponse,
-    HttpResponseContents, HttpResponsePayload, HttpResponsePreamble, HttpServerError,
+    HttpMethodNotAllowed, HttpNotFound, HttpRequest, HttpRequestContents, HttpRequestPreamble,
+    HttpResponse, HttpResponseContents, HttpResponsePayload, HttpResponsePreamble, HttpServerError,
 };
 use crate::net::p2p::PeerNetwork;
 use crate::net::server::HttpPeer;
@@ -78,8 +78,6 @@ pub enum TipRequest {
     UseLatestUnconfirmedTip,
     SpecificTip(StacksBlockId),
 }
-
-impl TipRequest {}
 
 impl fmt::Display for TipRequest {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -657,6 +655,15 @@ impl StacksHttpResponse {
         preamble: &HttpRequestPreamble,
         error: &dyn HttpErrorResponse,
     ) -> StacksHttpResponse {
+        Self::new_error_with_headers(preamble, error, vec![])
+    }
+
+    /// Make a new HTTP error response with additional headers, in reaction to a request
+    pub fn new_error_with_headers(
+        preamble: &HttpRequestPreamble,
+        error: &dyn HttpErrorResponse,
+        extra_headers: Vec<(String, String)>,
+    ) -> StacksHttpResponse {
         let payload = error.payload();
         let content_type = match &payload {
             HttpResponsePayload::Empty => HttpContentType::Bytes,
@@ -665,14 +672,17 @@ impl StacksHttpResponse {
             HttpResponsePayload::JSON(..) => HttpContentType::JSON,
         };
         let content_length = payload.try_content_length();
-        let preamble = HttpResponsePreamble::from_http_request_preamble(
+        let mut resp_preamble = HttpResponsePreamble::from_http_request_preamble(
             preamble,
             error.code(),
             http_reason(error.code()),
             content_length,
             content_type,
         );
-        StacksHttpResponse::new(preamble, payload)
+        for (key, value) in extra_headers {
+            resp_preamble.add_header(key, value);
+        }
+        StacksHttpResponse::new(resp_preamble, payload)
     }
 
     /// Make a new HTTP error response for text, apropos of nothing
@@ -965,8 +975,9 @@ pub struct StacksHttp {
     /// parse a reply.  If instead this state-machine is used by the server to parse a request and
     /// send a reply, it will be unused.
     request_handler_index: Option<usize>,
-    /// HTTP request handlers (verb, regex, request-handler, response-handler)
-    request_handlers: Vec<(String, Regex, Box<dyn RPCRequestHandler>)>,
+    /// HTTP request handlers (verb, regex, permissive_regex, request-handler)
+    /// The permissive_regex is used for 405 Method Not Allowed detection
+    request_handlers: Vec<(String, Regex, Regex, Box<dyn RPCRequestHandler>)>,
     /// Maximum size of call arguments
     pub maximum_call_argument_size: u32,
     /// Maximum execution budget of a read-only call
@@ -1034,6 +1045,7 @@ impl StacksHttp {
         self.request_handlers.push((
             handler.verb().to_string(),
             handler.path_regex(),
+            handler.path_regex_permissive(),
             Box::new(handler),
         ));
     }
@@ -1041,7 +1053,7 @@ impl StacksHttp {
     /// Find the HTTP request handler to use to process the reply, given the request path.
     /// Returns the index into the list of handlers
     fn find_response_handler(&self, request_verb: &str, request_path: &str) -> Option<usize> {
-        for (i, (verb, regex, _)) in self.request_handlers.iter().enumerate() {
+        for (i, (verb, regex, _, _)) in self.request_handlers.iter().enumerate() {
             if request_verb != verb {
                 continue;
             }
@@ -1052,6 +1064,21 @@ impl StacksHttp {
             return Some(i);
         }
         None
+    }
+
+    /// Find all allowed HTTP methods for a given path.
+    /// Returns a list of HTTP verbs that are allowed for handlers whose path regex matches.
+    fn find_allowed_methods(&self, request_path: &str) -> Vec<String> {
+        let mut allowed_methods = Vec::new();
+        for (verb, regex, permissive_regex, _) in self.request_handlers.iter() {
+            // Check if either the strict or permissive regex matches
+            if regex.is_match(request_path) || permissive_regex.is_match(request_path) {
+                if !allowed_methods.contains(verb) {
+                    allowed_methods.push(verb.clone());
+                }
+            }
+        }
+        allowed_methods
     }
 
     /// Force the state machine to expect a response
@@ -1108,16 +1135,25 @@ impl StacksHttp {
         let (decoded_path, query) = decode_request_path(&preamble.path_and_query_str)?;
         test_debug!("decoded_path: '{}', query: '{}'", &decoded_path, &query);
 
+        // Collect methods for 405 Allow header. permissive_regex matches path patterns even when
+        // parameters are invalid (For example: /v3/blocks/notahex), so we can return 405 instead of 404.
+        let mut allowed_methods: Vec<String> = Vec::new();
+
         // NOTE: This loop starts out like `find_response_handler()`, but `captures`'s lifetime is
         // bound to `regex` so we can't just return it from `find_response_handler()`.  Thus, it's
         // duplicated here.
-        for (verb, regex, request) in self.request_handlers.iter_mut() {
+        for (verb, regex, permissive_regex, request) in self.request_handlers.iter_mut() {
+            let permissive_match = permissive_regex.is_match(&decoded_path);
+            let Some(captures) = regex.captures(&decoded_path) else {
+                if permissive_match {
+                    allowed_methods.push(verb.to_string());
+                }
+                continue;
+            };
+            allowed_methods.push(verb.to_string());
             if &preamble.verb != verb {
                 continue;
             }
-            let Some(captures) = regex.captures(&decoded_path) else {
-                continue;
-            };
 
             let payload = match request.try_parse_request(
                 preamble,
@@ -1138,10 +1174,17 @@ impl StacksHttp {
         }
 
         test_debug!("Failed to parse '{}'", &preamble.path_and_query_str);
-        Err(NetError::Http(HttpError::Http(
-            404,
-            "No such file or directory".into(),
-        )))
+        if !allowed_methods.is_empty() {
+            Err(NetError::Http(HttpError::Http(
+                405,
+                format!("Method Not Allowed. Allowed: {}", allowed_methods.join(", ")),
+            )))
+        } else {
+            Err(NetError::Http(HttpError::Http(
+                404,
+                "No such file or directory".into(),
+            )))
+        }
     }
 
     /// Parse out an HTTP response error message
@@ -1194,7 +1237,7 @@ impl StacksHttp {
             return Self::try_parse_error_response(preamble, body);
         }
 
-        let (_, _, parser) = self
+        let (_, _, _, parser) = self
             .request_handlers
             .get(request_handler_index)
             .expect("FATAL: tried to use nonexistent response handler");
@@ -1217,7 +1260,20 @@ impl StacksHttp {
             .response_handler_index
             .or_else(|| self.find_response_handler(&request.preamble().verb, &decoded_path))
         else {
-            // method not found
+            // Handler not found - check if it's a method not allowed (405) or not found (404)
+            let allowed_methods = self.find_allowed_methods(&decoded_path);
+            if !allowed_methods.is_empty() {
+                // Path exists but method is not allowed (405)
+                return StacksHttpResponse::new_error(
+                    &request.preamble,
+                    &HttpMethodNotAllowed::new(format!(
+                        "Method Not Allowed. Allowed: {}",
+                        allowed_methods.join(", ")
+                    )),
+                )
+                .try_into_contents();
+            }
+            // Path does not exist (404)
             return StacksHttpResponse::new_error(
                 &request.preamble,
                 &HttpNotFound::new(format!(
@@ -1229,7 +1285,7 @@ impl StacksHttp {
             .try_into_contents();
         };
 
-        let (_, _, request_handler) = self
+        let (_, _, _, request_handler) = self
             .request_handlers
             .get_mut(response_handler_index)
             .expect("FATAL: request points to a nonexistent handler");
@@ -1385,7 +1441,7 @@ impl StacksHttp {
         };
         req.response_handler_index = Some(response_handler_index);
 
-        let (_, _, request_handler) = self
+        let (_, _, _, request_handler) = self
             .request_handlers
             .get(response_handler_index)
             .expect("FATAL: request points to a nonexistent handler");
@@ -1627,9 +1683,20 @@ impl ProtocolFamily for StacksHttp {
                     Ok(data_request) => Ok((StacksHttpMessage::Request(data_request), len)),
                     Err(NetError::Http(http_error)) => {
                         // convert into a response
-                        let resp = StacksHttpResponse::new_error(
+                        // for 405 responses, extract allowed methods and add Allow header
+                        let extra_headers = if let HttpError::Http(405, ref msg) = &http_error {
+                            if let Some(allowed_part) = msg.strip_prefix("Method Not Allowed. Allowed: ") {
+                                vec![("Allow".to_string(), allowed_part.to_string())]
+                            } else {
+                                vec![]
+                            }
+                        } else {
+                            vec![]
+                        };
+                        let resp = StacksHttpResponse::new_error_with_headers(
                             http_request_preamble,
                             &*http_error.into_http_error(),
+                            extra_headers,
                         );
                         self.reset();
                         return Ok((

@@ -746,9 +746,11 @@ pub fn get_ancestor_block_hash<T: MarfTrieId>(
     block_height: u64,
     tip_block_hash: &T,
 ) -> Result<Option<T>, Error> {
-    assert!(block_height <= u32::MAX as u64);
+    let block_height: u32 = block_height
+        .try_into()
+        .map_err(|_e| Error::Other("Block height exceeds maximum supported value".into()))?;
     let mut read_only = index.reopen_connection()?;
-    let bh = read_only.get_block_at_height(block_height as u32, tip_block_hash)?;
+    let bh = read_only.get_block_at_height(block_height, tip_block_hash)?;
     Ok(bh)
 }
 
