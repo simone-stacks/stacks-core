@@ -311,11 +311,7 @@ impl RPCRequestHandler for GetSortitionHandler {
         // Validate block height is within u32 range (required by MARF)
         if let QuerySpecifier::BlockHeight(height) = &self.query {
             if *height > u32::MAX as u64 {
-                let msg = format!(
-                    "Invalid block height {}: must be <= {}",
-                    height,
-                    u32::MAX
-                );
+                let msg = format!("Invalid block height {}: must be <= {}", height, u32::MAX);
                 return StacksHttpResponse::new_error(&preamble, &HttpBadRequest::new(msg))
                     .try_into_contents()
                     .map_err(NetError::from);

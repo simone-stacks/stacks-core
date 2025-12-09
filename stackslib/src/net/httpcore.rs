@@ -1177,7 +1177,10 @@ impl StacksHttp {
         if !allowed_methods.is_empty() {
             Err(NetError::Http(HttpError::Http(
                 405,
-                format!("Method Not Allowed. Allowed: {}", allowed_methods.join(", ")),
+                format!(
+                    "Method Not Allowed. Allowed: {}",
+                    allowed_methods.join(", ")
+                ),
             )))
         } else {
             Err(NetError::Http(HttpError::Http(
@@ -1685,7 +1688,9 @@ impl ProtocolFamily for StacksHttp {
                         // convert into a response
                         // for 405 responses, extract allowed methods and add Allow header
                         let extra_headers = if let HttpError::Http(405, ref msg) = &http_error {
-                            if let Some(allowed_part) = msg.strip_prefix("Method Not Allowed. Allowed: ") {
+                            if let Some(allowed_part) =
+                                msg.strip_prefix("Method Not Allowed. Allowed: ")
+                            {
                                 vec![("Allow".to_string(), allowed_part.to_string())]
                             } else {
                                 vec![]
