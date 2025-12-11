@@ -369,6 +369,11 @@ impl RPCRequestHandler for GetSortitionHandler {
                 // nope -- error trying to check
                 let msg = format!("Failed to load snapshot for {:?}: {:?}\n", &self.query, &e);
                 warn!("{msg}");
+                if matches!(e, ChainError::DBError(DBError::BlockHeightOutOfRange)) {
+                    return StacksHttpResponse::new_error(&preamble, &HttpBadRequest::new(msg))
+                        .try_into_contents()
+                        .map_err(NetError::from);
+                }
                 return StacksHttpResponse::new_error(&preamble, &HttpServerError::new(msg))
                     .try_into_contents()
                     .map_err(NetError::from);

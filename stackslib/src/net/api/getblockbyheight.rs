@@ -29,6 +29,7 @@ use crate::net::httpcore::{
     HttpRequestContentsExtensions as _, RPCRequestHandler, StacksHttpRequest, StacksHttpResponse,
 };
 use crate::net::{Error as NetError, StacksNodeState, TipRequest};
+use crate::util_lib::db::Error as DBError;
 
 #[derive(Clone)]
 pub struct RPCNakamotoBlockByHeightRequestHandler {
@@ -146,9 +147,12 @@ impl RPCRequestHandler for RPCNakamotoBlockByHeightRequestHandler {
                 // error querying the db
                 let msg = format!("Failed to load block #{}: {:?}\n", block_height, &e);
                 warn!("{}", &msg);
-                return StacksHttpResponse::new_error(&preamble, &HttpServerError::new(msg))
-                    .try_into_contents()
-                    .map_err(NetError::from);
+                let resp = if matches!(e, DBError::BlockHeightOutOfRange) {
+                    StacksHttpResponse::new_error(&preamble, &HttpBadRequest::new(msg))
+                } else {
+                    StacksHttpResponse::new_error(&preamble, &HttpServerError::new(msg))
+                };
+                return resp.try_into_contents().map_err(NetError::from);
             }
         };
 
