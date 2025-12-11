@@ -1135,21 +1135,22 @@ impl StacksHttp {
         let (decoded_path, query) = decode_request_path(&preamble.path_and_query_str)?;
         test_debug!("decoded_path: '{}', query: '{}'", &decoded_path, &query);
 
-        // Collect methods for 405 Allow header. permissive_regex matches path patterns even when
-        // parameters are invalid (For example: /v3/blocks/notahex), so we can return 405 instead of 404.
         let mut allowed_methods: Vec<String> = Vec::new();
-
-        // NOTE: This loop starts out like `find_response_handler()`, but `captures`'s lifetime is
-        // bound to `regex` so we can't just return it from `find_response_handler()`.  Thus, it's
-        // duplicated here.
+        let mut verb_matched_but_params_invalid = false;
+        let mut any_strict_match = false;
         for (verb, regex, permissive_regex, request) in self.request_handlers.iter_mut() {
             let permissive_match = permissive_regex.is_match(&decoded_path);
             let Some(captures) = regex.captures(&decoded_path) else {
                 if permissive_match {
+                    if &preamble.verb == verb {
+                        verb_matched_but_params_invalid = true;
+                    }
                     allowed_methods.push(verb.to_string());
                 }
                 continue;
             };
+
+            any_strict_match = true;
             allowed_methods.push(verb.to_string());
             if &preamble.verb != verb {
                 continue;
@@ -1169,12 +1170,20 @@ impl StacksHttp {
             };
 
             debug!("Handle StacksHttpRequest"; "verb" => %verb, "peer_addr" => %self.peer_addr, "path" => %decoded_path, "query" => %query);
-            let request = StacksHttpRequest::new(preamble.clone(), payload);
-            return Ok(request);
+            return Ok(StacksHttpRequest::new(preamble.clone(), payload));
         }
 
         test_debug!("Failed to parse '{}'", &preamble.path_and_query_str);
-        if !allowed_methods.is_empty() {
+
+        // Return 400 if verb matched but path params were invalid (e.g. GET /v3/blocks/65-char-hex)
+        // Return 405 if path exists but verb (GET, POST, ecc...) doesn't match (e.g. DELETE /v2/info)
+        // Return 404 if path doesn't exist (e.g. GET /v3/nonexistent)
+        if !any_strict_match && verb_matched_but_params_invalid {
+            Err(NetError::Http(HttpError::Http(
+                400,
+                "Invalid path parameters".into(),
+            )))
+        } else if !allowed_methods.is_empty() {
             Err(NetError::Http(HttpError::Http(
                 405,
                 format!(
