@@ -574,6 +574,57 @@ This endpoint also accepts a querystring parameter `?tip=` which when supplied
 will return the block relative to the specified tip allowing the querying of
 sibling blocks (same height, different tip) too.
 
+### POST /v3/blocks/upload/
+
+Upload a Nakamoto block to the node. The request body must be the raw block
+bytes with `Content-Type: application/octet-stream`.
+
+Returns JSON:
+
+```json
+{
+  "stacks_block_id": "0x...",
+  "accepted": true
+}
+```
+
+Accepts an optional querystring parameter `?broadcast=1` to relay the block to
+peers. When `broadcast=1` is set, the `Authorization` header must match the
+node's configured `auth_token`. An incorrect or missing `Authorization` header
+will return 401 even without `broadcast`.
+
+### GET /v3/blocks/replay/[Block ID]
+
+Re-mine an existing block by its block ID, replaying all of its transactions.
+Requires the `Authorization` header to match the node's `auth_token`.
+This will return 400 if no auth token is configured, 401 if the header is
+missing or incorrect, and 404 if the block does not exist.
+
+Accepts an optional querystring parameter `?profiler=1` to include per-transaction
+CPU performance counters (requires the `profiler` feature on Linux x86_64).
+
+Returns JSON with block metadata and a `transactions` array containing per-transaction
+results (execution cost, events, result, optional profiling data).
+
+### POST /v3/blocks/simulate/[Block ID]
+
+Simulate mining on top of an existing block with custom transactions and
+optional STX minting. Requires the `Authorization` header to match the
+node's `auth_token`. Returns 400 if no auth token is configured, 401 if
+unauthorized, and 404 if the block does not exist.
+
+Request body (`Content-Type: application/json`):
+
+```json
+{
+  "mint": [{ "principal": "SP...", "amount": 1000000 }],
+  "transactions_hex": ["0a0b0c..."]
+}
+```
+
+Accepts `?profiler=1` like the replay endpoint. Response format is identical
+to `/v3/blocks/replay/`.
+
 ### GET /v3/tenures/[Block ID]
 
 Fetch a Nakamoto block and all of its ancestors in the same tenure, given its
@@ -604,11 +655,180 @@ highest sortition), `reward_cycle` identifies the reward cycle number of this
 tenure, `tip_block_id` identifies the highest-known block in this tenure, and
 `tip_height` identifies that block's height.
 
+### GET /v3/tenures/tip/[Consensus Hash]
+
+Get the highest-known block header in a tenure identified by its 40-hex consensus hash.
+
+Returns a tagged `StacksBlockHeaderTypes` JSON object:
+
+```json
+{ "Nakamoto": { "version": 1, "chain_length": 200, ... } }
+```
+
+or for epoch 2.x tenures:
+
+```json
+{ "Epoch2": { "version": 1, "total_work": { ... }, ... } }
+```
+
+This will return 404 if no blocks exist for the given tenure.
+
+### GET /v3/tenures/tip_metadata/[Consensus Hash]
+
+Like `/v3/tenures/tip/` but wraps the header with additional metadata:
+
+```json
+{
+  "anchored_header": { "Nakamoto": { ... } },
+  "burn_view": "dca60a97a135189d67a5ad6d2dac90f289b19c96"
+}
+```
+
+`burn_view` is the consensus hash of the burn view and may be `null`.
+This will return 404 if no blocks exist for the given tenure.
+
+### GET /v3/tenures/blocks/[Consensus Hash]
+
+Fetch all Stacks blocks in a tenure identified by its 40-hex consensus hash.
+Returns JSON:
+
+```json
+{
+  "consensus_hash": "dca60a97a135189d67a5ad6d2dac90f289b19c96",
+  "last_sortition_ch": "...",
+  "burn_block_height": 900100,
+  "burn_block_hash": "000000000000000000024f...",
+  "stacks_blocks": [
+    {
+      "block_id": "0x...",
+      "header_type": "nakamoto",
+      "block_hash": "0x...",
+      "parent_block_id": "0x...",
+      "height": 200
+    }
+  ]
+}
+```
+
+Note: `burn_block_hash` is a plain hex string (no `0x` prefix). Blocks are
+returned from highest to lowest within the tenure. If the tenure is valid but
+contains no Stacks blocks, `stacks_blocks` will be an empty array.
+
+### GET /v3/tenures/blocks/height/[Burn Block Height]
+
+Same as `/v3/tenures/blocks/` but looks up the tenure by **Bitcoin burn block
+height** (not Stacks height). Returns the same `RPCTenure` JSON response.
+
+This will return 404 if no sortition exists at the given height.
+
+### GET /v3/tenures/blocks/hash/[Burn Block Hash]
+
+Same as `/v3/tenures/blocks/` but looks up the tenure by burnchain block hash
+(64-hex). Returns the same `RPCTenure` JSON response.
+
+This will return 404 if no sortition exists for the given hash.
+
+### GET /v3/tenures/fork_info/[Start Consensus Hash]/[Stop Consensus Hash]
+
+Return forking information for tenures between two consensus hashes (both
+40-hex). Walks backward from `stop` to `start`, returning up to 10 sortitions
+(shadow tenures do not count toward the depth limit).
+
+Returns a JSON array of `TenureForkingInfo` objects:
+
+```json
+[
+  {
+    "burn_block_hash": "0x...",
+    "burn_block_height": 900100,
+    "sortition_id": "0x...",
+    "parent_sortition_id": "0x...",
+    "consensus_hash": "0x...",
+    "was_sortition": true,
+    "first_block_mined": "0x...",
+    "nakamoto_blocks": "0a0b0c..."
+  }
+]
+```
+
+Note: `nakamoto_blocks` is a hex-encoded binary blob (codec-serialized blocks),
+not a JSON array. Fields with `0x` prefix use serde `prefix_hex`/`prefix_opt_hex`
+annotations.
+
+This will return 400 if start and stop are not in the same sortition fork,
+and 404 if either consensus hash is unknown.
+
+### GET /v3/sortitions[/[Key]/[Value]]
+
+Get sortition information. Multiple query forms are supported:
+
+* `/v3/sortitions` — latest sortition
+* `/v3/sortitions/consensus/[40-hex]` — by consensus hash
+* `/v3/sortitions/burn/[64-hex]` — by burnchain block hash
+* `/v3/sortitions/burn_height/[height]` — by burn block height
+* `/v3/sortitions/latest_and_last` — latest winning sortition plus its `last_sortition_ch`
+
+Returns a JSON array of `SortitionInfo` objects:
+
+```json
+[
+  {
+    "burn_block_hash": "0x...",
+    "burn_block_height": 900100,
+    "burn_header_timestamp": 1700000000,
+    "sortition_id": "0x...",
+    "parent_sortition_id": "0x...",
+    "consensus_hash": "0x...",
+    "was_sortition": true,
+    "miner_pk_hash160": "0x...",
+    "stacks_parent_ch": "0x...",
+    "last_sortition_ch": "0x...",
+    "committed_block_hash": "0x...",
+    "vrf_seed": "0x..."
+  }
+]
+```
+
+`was_sortition` is also `true` for shadow block tenures. In Stacks 2.x,
+`committed_block_hash` is the winning block; in 3.x it is the first block of
+the parent tenure. The `latest_and_last` form returns two entries.
+
+All hex fields use `0x` prefix. Optional fields (`miner_pk_hash160`,
+`stacks_parent_ch`, etc.) are `null` when no sortition occurred.
+
 ### GET /v3/signer/[Signer Pubkey]/[Reward Cycle]
 
 Get number of blocks signed by signer during a given reward cycle.
 
 Returns a non-negative integer
+
+### GET /v3/stacker_set/[Cycle Number]
+
+Get the stacker set (reward set) for a given PoX reward cycle. Requires PoX-4
+(Nakamoto). See the [OpenAPI spec](./rpc/openapi.yaml) for the full response schema
+and the `tip` parameter.
+
+This endpoint accepts a querystring parameter `?tip=` to control which chain tip
+state is queried.
+
+Returns JSON:
+
+```json
+{
+  "stacker_set": {
+    "rewarded_addresses": [
+      { "Standard": [{ "bytes": "...", "version": 26 }, "SerializeP2PKH"] }
+    ],
+    "start_cycle_state": { ... },
+    "pox_ustx_threshold": "...",
+    "signers": [ ... ]
+  }
+}
+```
+
+This will return 400 with `"err_type": "other"` if the active PoX contract is
+pre-PoX-4, and 400 with `"err_type": "not_available_try_again"` if the prepare
+phase has not started for the requested cycle.
 
 ### GET /v3/transaction/[Transaction ID]
 
@@ -636,3 +856,38 @@ If there are no valid initial peers or data for the node to determine this infor
 A user can utilize the `difference_from_max_peer` to establish their own criteria for determining if a node is out of sync.
 
 See OpenAPI [spec](./rpc/openapi.yaml) for details.
+
+### POST /v3/contracts/fast-call-read/[Address]/[Contract Name]/[Function Name]
+
+Call a read-only function with a free cost tracker and a wall-clock execution
+timeout instead of the normal Clarity cost limits. Requires the `Authorization`
+header to match the node's `auth_token`. Returns 400 if no auth token is
+configured, and 401 if the header is missing or incorrect.
+
+This endpoint accepts a querystring parameter `?tip=` to control which chain tip
+state is queried.
+
+Request body (`Content-Type: application/json`):
+
+```json
+{
+  "sender": "SP31DA6FTSJX2WGTZ69SFY11BH51NZMB0ZW97B5P0",
+  "sponsor": "SP...",
+  "arguments": ["0x0011..."]
+}
+```
+
+`sponsor` is optional and omitted from the JSON when not provided.
+
+Response is the same as `/v2/contracts/call-read/`:
+
+```json
+{
+  "okay": true,
+  "result": "0x0011..."
+}
+```
+
+On error, `okay` is `false` and `cause` contains the error string. Optional
+fields (`result`, `cause`) are omitted from the response when not applicable.
+This will return 408 if the execution time limit is exceeded.
