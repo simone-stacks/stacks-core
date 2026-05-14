@@ -501,7 +501,7 @@ impl<'a> ClarityDatabase<'a> {
         self.store.put_data(key, &value.serialize())
     }
 
-    /// Like `put()`, but returns the serialized byte size of the stored value
+    /// Like `put_data()`, but returns the serialized byte size of the stored value
     pub fn put_data_with_size<T: ClaritySerializable>(
         &mut self,
         key: &str,
