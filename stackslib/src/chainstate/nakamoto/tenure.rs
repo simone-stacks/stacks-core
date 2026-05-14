@@ -333,7 +333,8 @@ impl NakamotoChainState {
     }
 
     /// Get scheduled miner rewards that have matured when this tenure starts.
-    /// Returns (list of miners to pay, any residual payments to the parent miner) on success.
+    /// Returns `Ok(Some(MaturedMinerPaymentSchedules { latest_miners, parent_miner }))` on success.
+    /// Returns `Err(ChainstateError)` if a required header/reward lookup fails.
     pub(crate) fn get_matured_miner_reward_schedules(
         chainstate_tx: &mut ChainstateTx,
         tip_index_hash: &StacksBlockId,
