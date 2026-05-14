@@ -799,9 +799,9 @@ impl ConversationP2P {
     }
 
     /// Validate an inbound message's preamble against our knowledge of the burn chain.
-    /// Return Ok(true) if we can proceed
-    /// Return Ok(false) if we can't proceed, but the remote peer is not in violation of the protocol
-    /// Return Err(net_error::InvalidMessage) if the remote peer returns an invalid message in
+    /// Returns Ok(true) if we can proceed. A `debug!` log is emitted (but `Ok(true)` is still
+    /// returned) when the peer is too far ahead for neighbor walks.
+    /// Returns Err(net_error::InvalidMessage) if the remote peer returns an invalid message in
     ///     violation of the protocol
     pub fn is_preamble_valid(
         &self,
