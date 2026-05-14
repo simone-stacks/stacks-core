@@ -1625,7 +1625,7 @@ impl StacksMessageCodec for BlockResponseData {
     }
 }
 
-/// A rejection response from a signer for a proposed block
+/// An acceptance response from a signer for a proposed block
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BlockAccepted {
     /// The signer signature hash of the block that was accepted
