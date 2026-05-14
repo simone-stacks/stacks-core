@@ -778,7 +778,10 @@ impl Relayer {
 
     /// Insert a staging block that got relayed to us somehow -- e.g. uploaded via http, downloaded
     /// by us, or pushed via p2p.
-    /// Return Ok(true) if we stored it, Ok(false) if we didn't
+    /// Returns `Ok(BlockAcceptResponse::Accepted)` if the block was newly stored,
+    /// `Ok(BlockAcceptResponse::AlreadyStored)` if we already had it,
+    /// `Ok(BlockAcceptResponse::Rejected(reason))` if it was rejected, and
+    /// `Err(..)` on DB or chainstate errors.
     pub fn process_new_anchored_block(
         sort_ic: &SortitionDBConn,
         chainstate: &mut StacksChainState,
