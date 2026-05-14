@@ -697,7 +697,7 @@ impl NakamotoTenureDownloader {
     /// data URL corresponding to self.naddr.
     /// Returns Ok(true) if we sent the request, or there's already an in-flight request.  The
     /// caller should try this again until it gets one of the other possible return values.
-    /// Returns Ok(false) if not (e.g. neighbor is known to be dead or broken)
+    /// Returns Ok(false) if `make_next_download_request` failed to build a request.
     /// Returns Err(..) if self.naddr is known to be a dead or broken peer, or if we were unable to
     /// resolve its data URL to a socket address.
     pub fn send_next_download_request(
