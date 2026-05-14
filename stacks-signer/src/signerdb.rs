@@ -1624,7 +1624,7 @@ impl SignerDb {
     }
 
     /// Insert or replace a block into the database.
-    /// Preserves the `broadcast` column if replacing an existing block.
+    /// Preserves the `broadcasted` column if replacing an existing block.
     pub fn insert_block(&mut self, block_info: &BlockInfo) -> Result<(), DBError> {
         let block_json =
             serde_json::to_string(&block_info).expect("Unable to serialize block info");
