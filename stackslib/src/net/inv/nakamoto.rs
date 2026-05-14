@@ -524,7 +524,7 @@ impl NakamotoTenureInv {
         rc_tenures.get(rc_height).unwrap_or(false)
     }
 
-    /// How many reward cycles of data do we have for this peer?
+    /// Highest reward cycle for which we have any inv data from this peer (zero if none).
     pub fn highest_reward_cycle(&self) -> u64 {
         self.tenures_inv
             .last_key_value()
