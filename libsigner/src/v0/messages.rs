@@ -354,7 +354,7 @@ pub struct MockProposal {
 }
 
 impl MockProposal {
-    /// Create a new mock proposal data struct from the provided peer info, chain id, and private key.
+    /// Create a new mock proposal data struct from the provided peer info and private key.
     pub fn new(peer_info: PeerInfo, stacks_private_key: &StacksPrivateKey) -> Self {
         let mut sig = Self {
             signature: MessageSignature::empty(),
