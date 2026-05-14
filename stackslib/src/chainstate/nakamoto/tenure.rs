@@ -548,8 +548,9 @@ impl NakamotoChainState {
     /// Verify that a tenure change tx is a valid first-ever tenure change.  It must connect to an
     /// epoch2 block, and it must be sortition-induced.
     ///
-    /// Returns Some(mocked-epoch2-tenure) on success
-    /// Returns None on error
+    /// Returns Ok(Some(mocked-epoch2-tenure)) on success
+    /// Returns Ok(None) if the tenure change is invalid
+    /// Returns Err(..) on DB error
     pub(crate) fn check_first_nakamoto_tenure_change(
         headers_conn: &Connection,
         tenure_payload: &TenureChangePayload,
