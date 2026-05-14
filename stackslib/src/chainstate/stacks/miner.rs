@@ -1856,9 +1856,9 @@ impl StacksBlockBuilder {
     /// This function should be called before `epoch_begin`.
     /// It loads the parent microblock stream, sets the parent microblock, and returns
     /// data necessary for `epoch_begin`.
-    /// Returns chainstate transaction, clarity instance, burnchain header hash
-    /// of the burn tip, burn tip height + 1, the parent microblock stream,
-    /// the parent consensus hash, the parent header hash, and a bool
+    /// Returns a `MinerEpochInfo` with chainstate transaction, clarity instance,
+    /// burnchain header hash of the burn tip, burn tip height + 1, the parent
+    /// microblock stream, and a bool
     /// representing whether the network is mainnet or not.
     pub fn pre_epoch_begin<'a>(
         &mut self,
