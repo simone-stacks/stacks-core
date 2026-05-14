@@ -114,8 +114,9 @@ impl NakamotoBlock {
         self.header.is_shadow_block()
     }
 
-    /// Verify that if this shadow block has a coinbase, that its VRF proof is consistent with the leader
-    /// public key's VRF key. If there is no coinbase tx, then this is a no-op.
+    /// Verify that if this shadow block has a coinbase, then it carries a VRF proof and pays to the
+    /// burn address for the configured network. The VRF proof itself is not checked against any key
+    /// (shadow blocks are not produced by a miner). If there is no coinbase tx, then this is a no-op.
     pub(crate) fn check_shadow_coinbase_tx(&self, mainnet: bool) -> Result<(), ChainstateError> {
         if !self.is_shadow_block() {
             error!(
