@@ -2285,7 +2285,7 @@ impl StacksBlockBuilder {
     // Or keep the skip and remove the comment
     #[cfg_attr(test, mutants::skip)]
     /// Given access to the mempool, mine an anchored block with no more than the given execution cost.
-    ///   returns the assembled block, and the consumed execution budget.
+    ///   returns the assembled block, the consumed execution budget, and the block size in bytes.
     pub fn build_anchored_block(
         chainstate_handle: &StacksChainState, // not directly used; used as a handle to open other chainstates
         burn_dbconn: &SortitionHandleConn,
