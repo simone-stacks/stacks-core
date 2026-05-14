@@ -880,10 +880,12 @@ impl Relayer {
 
     /// Insert a staging Nakamoto block that got relayed to us somehow -- e.g. uploaded via http,
     /// downloaded by us, or pushed via p2p.
-    /// Return Ok(true) if we should broadcast the block.  If force_broadcast is true, then this
-    /// function will return Ok(true) even if we already have the block.
-    /// Return Ok(false) if we should not broadcast it (e.g. we already have it, it was invalid,
-    /// etc.)
+    /// Returns `Ok(BlockAcceptResponse::Accepted)` if the block was newly stored (or if
+    /// `force_broadcast` is true and we already have it).
+    /// Returns `Ok(BlockAcceptResponse::AlreadyStored)` if we already have the block (and
+    /// `force_broadcast` is false), or if `accept_block` returned `false`.
+    /// Returns `Ok(BlockAcceptResponse::Rejected(reason))` if the block was rejected
+    /// (fault-injected, problematic AST, etc.).
     /// Return Err(..) in the following cases, beyond DB errors:
     /// * If the block is from a tenure we don't recognize
     /// * If we're not in the Nakamoto epoch
