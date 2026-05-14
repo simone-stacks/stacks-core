@@ -1022,7 +1022,8 @@ impl RelayerThread {
     }
 
     /// Create and broadcast a VRF public key registration transaction.
-    /// Returns true if we succeed in doing so; false if not.
+    /// No-ops (without indicating failure) if a registration is already in-flight or if the
+    /// underlying bitcoin submission fails — callers cannot observe success from this method.
     pub fn rotate_vrf_and_register(&mut self, burn_block: &BlockSnapshot) {
         if self.last_vrf_key_burn_height.is_some() {
             // already in-flight
