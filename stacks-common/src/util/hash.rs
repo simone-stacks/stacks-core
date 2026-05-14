@@ -519,7 +519,9 @@ where
     }
 
     /// Get the path from the given data's leaf up to the root.
-    /// will be None if the data isn't a leaf.
+    /// Will be `None` if the data isn't a leaf and the tree is non-empty.
+    /// **Panics** if `self` is empty (built via `MerkleTree::empty()` or
+    /// `MerkleTree::new(&[])`) — there is no row to index into.
     pub fn path(&self, data: &[u8]) -> Option<MerklePath<H>> {
         let leaf_hash = MerkleTree::get_leaf_hash(data);
         let mut hash_index = self.find_hash_index(&leaf_hash, 0)?;
