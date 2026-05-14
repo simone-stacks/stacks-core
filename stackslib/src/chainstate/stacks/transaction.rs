@@ -838,7 +838,10 @@ impl StacksTransaction {
     }
 
     /// Sign a sighash and append the signature and public key to the given spending condition.
-    /// Returns the next sighash
+    /// Returns the sighash that the *next* signer should use.
+    /// For `Singlesig` and `Multisig`, this is the advanced sighash after this signature.
+    /// For `OrderIndependentMultisig`, this is `cur_sighash` unchanged, since every signer in an
+    /// order-independent multisig signs the same sighash.
     fn sign_and_append(
         condition: &mut TransactionSpendingCondition,
         cur_sighash: &Txid,
@@ -916,7 +919,9 @@ impl StacksTransaction {
     }
 
     /// Append the next signature from the origin account authorization.
-    /// Return the next sighash.
+    /// Return the sighash that the next origin signer should use.
+    /// For Singlesig / Multisig this is the advanced sighash; for OrderIndependentMultisig
+    /// it is `cur_sighash` unchanged.
     pub fn sign_next_origin(
         &mut self,
         cur_sighash: &Txid,
@@ -949,7 +954,9 @@ impl StacksTransaction {
     }
 
     /// Append the next signature from the sponsoring account.
-    /// Return the next sighash
+    /// Return the sighash that the next sponsor signer should use.
+    /// For Singlesig / Multisig this is the advanced sighash; for OrderIndependentMultisig
+    /// it is `cur_sighash` unchanged.
     pub fn sign_next_sponsor(
         &mut self,
         cur_sighash: &Txid,
