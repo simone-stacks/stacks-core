@@ -423,7 +423,7 @@ impl StacksBlock {
     }
 
     /// Find and return the coinbase transaction.  It's always the first transaction.
-    /// If there are 0 coinbase txs, or more than 1, then return None
+    /// If the first transaction is not a coinbase (including the empty-block case), return None.
     pub fn get_coinbase_tx(&self) -> Option<StacksTransaction> {
         let tx = self.txs.first()?;
         match tx.payload {
