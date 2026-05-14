@@ -1219,7 +1219,7 @@ impl SignerDb {
     /// The current schema version used in this build of the signer binary.
     pub const SCHEMA_VERSION: u32 = SchemaVersion::V19.as_u32();
 
-    /// Create a new `SignerState` instance.
+    /// Create a new `SignerDb` instance.
     /// This will create a new SQLite database at the given path
     /// or an in-memory database if the path is ":memory:"
     pub fn new(db_path: impl AsRef<Path>) -> Result<Self, DBError> {
