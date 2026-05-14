@@ -314,7 +314,7 @@ impl NakamotoChainState {
     /// Load the stored VRF proof for the given shadow block's tenure.
     ///
     /// Returns Ok(Some(vrf proof)) on success
-    /// Returns Ok(None) if the parent tenure isn't a shadow tenure
+    /// Returns Ok(None) if `tip_block_id` is not present or is not a shadow block
     pub(crate) fn get_shadow_vrf_proof<SDBI: StacksDBIndexed>(
         chainstate_conn: &mut SDBI,
         tip_block_id: &StacksBlockId,
