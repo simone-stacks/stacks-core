@@ -2169,8 +2169,7 @@ impl<'a> SortitionHandleConn<'a> {
     }
 
     /// Get consensus hash from a particular chain tip's history
-    /// Returns None if the block height or block hash does not correspond to a
-    /// known snapshot.
+    /// Returns None if the block height does not correspond to a known snapshot.
     pub fn get_consensus_at(&self, block_height: u64) -> Result<Option<ConsensusHash>, db_error> {
         if block_height >= BLOCK_HEIGHT_MAX {
             return Err(db_error::BlockHeightOutOfRange);
