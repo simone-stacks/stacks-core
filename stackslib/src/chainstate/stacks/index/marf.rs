@@ -862,9 +862,7 @@ impl<T: MarfTrieId> MARF<T> {
     /// create or open a particular Trie.
     /// If the trie doesn't exist, then extend it from the current Trie and create a root node that
     /// has back pointers to its immediate children in the current trie.
-    /// On Ok, s will point to new_bhh and will be open for reading.
-    /// Returns true/false, based on whether or not the trie will be created (this can return false
-    /// if we're resuming work on an unconfirmed trie)
+    /// On Ok(()), `storage` will point to `new_bhh` and will be open for reading.
     pub fn extend_trie(storage: &mut TrieStorageTransaction<T>, new_bhh: &T) -> Result<(), Error> {
         if storage.readonly() {
             unreachable!("CORRUPTION: constructed read-only TrieStorageTransaction instance");
