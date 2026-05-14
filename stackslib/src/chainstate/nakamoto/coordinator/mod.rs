@@ -293,7 +293,6 @@ fn find_prepare_phase_sortitions(
 ///
 /// Returns Ok(Some(reward-cycle-info)) if we found the first sortition in the prepare phase.
 /// Returns Ok(None) if we're still waiting for the PoX anchor block sortition
-/// Returns Err(Error::NotInPreparePhase) if `burn_height` is not in the prepare phase
 pub fn get_nakamoto_reward_cycle_info<U: RewardSetProvider>(
     sortition_tip: &SortitionId,
     reward_cycle: u64,
