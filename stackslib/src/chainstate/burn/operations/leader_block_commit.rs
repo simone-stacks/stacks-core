@@ -1042,7 +1042,9 @@ impl LeaderBlockCommitOp {
         Ok(())
     }
 
-    /// Returns Ok() and a vector of PoxAddresses which were punished by this op
+    /// Validates this block-commit. On success, records how each PoX address in the reward set
+    /// was treated by this op (reward or punishment) in `self.treatment` — but only when
+    /// `reward_set_info.allow_nakamoto_punishment` is true.
     pub fn check(
         &mut self,
         burnchain: &Burnchain,
