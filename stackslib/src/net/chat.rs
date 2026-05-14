@@ -1125,7 +1125,9 @@ impl ConversationP2P {
     }
 
     /// Update connection state from handshake data.
-    /// Returns true if we learned a new public key; false if not
+    /// Returns Ok(true) if the peer's public key was *replaced* (a prior key existed and differs
+    /// from the new one). Returns Ok(false) when the peer is supplying its public key for the
+    /// first time, or when the new key matches the prior one.
     pub fn update_from_handshake_data(
         &mut self,
         preamble: &Preamble,
