@@ -245,7 +245,8 @@ pub struct BlockMetadata {
     pub tenure_consumed: ExecutionCost,
     /// The cost budget for the current tenure
     pub tenure_budget: ExecutionCost,
-    /// The size of the blocks in the current tenure in bytes
+    /// The size, in bytes, of the single block just built (i.e. `builder.bytes_so_far`).
+    /// Tenure-wide accumulation lives on `StacksHeaderInfo::total_tenure_size`.
     pub tenure_size: u64,
     /// The events emitted by the transactions included in this block
     pub tx_events: Vec<TransactionEvent>,
