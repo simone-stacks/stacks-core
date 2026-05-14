@@ -298,9 +298,11 @@ impl<NC: NeighborComms> StackerDBSync<NC> {
 
     /// Given the downloaded set of chunk inventories, identify:
     /// * which chunks we need to fetch, because they're newer than ours.
-    /// * what order to fetch chunks in, in rarest-first order
-    /// Returns a list of (chunk requests, list of neighbors that can service them), which is
-    /// ordered from rarest chunk to most-common chunk.
+    /// * what order to fetch chunks in.
+    /// Returns a list of (chunk requests, list of neighbors that can service them), currently
+    /// ordered from most-common chunk (highest neighbor count) to rarest. NOTE: this is opposite
+    /// to the inline comment's stated intent and to `make_chunk_push_schedule` — see the
+    /// `schedule.reverse()` call below. May represent a stale doc or an intentional inversion.
     pub fn make_chunk_request_schedule(
         &self,
         network: &PeerNetwork,
