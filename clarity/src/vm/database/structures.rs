@@ -863,7 +863,7 @@ impl<'db, 'conn> STXBalanceSnapshot<'db, 'conn> {
 
     /// Extend this account's current lock to `unlock_burn_height`.
     /// After calling, this method will set the balance to a "LockedPoxFour" balance,
-    ///  because this method is only invoked as a result of PoX3 interactions
+    ///  because this method is only invoked as a result of PoX4 interactions
     pub fn extend_lock_v4(&mut self, unlock_burn_height: u64) -> Result<(), VmExecutionError> {
         let unlocked = self.unlock_available_tokens_if_any()?;
         if unlocked > 0 {
@@ -929,7 +929,7 @@ impl<'db, 'conn> STXBalanceSnapshot<'db, 'conn> {
     }
 
     /// Return true iff `self` represents a snapshot that has a lock
-    ///  created by PoX v3.
+    ///  created by PoX v4.
     pub fn is_v4_locked(&mut self) -> Result<bool, VmExecutionError> {
         match self.canonical_balance_repr()? {
             STXBalance::LockedPoxFour { .. } => Ok(true),
