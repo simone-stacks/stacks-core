@@ -5234,7 +5234,6 @@ impl NakamotoChainState {
     /// Returns Some(Range<u32>) if the miner is in the StackerDB config, where the range of slots for the miner is [start, end).
     ///   i.e., inclusive of `start`, exclusive of `end`.
     /// Returns None if the miner is not in the StackerDB config.
-    /// Returns an error if the miner is in the StackerDB config but the slot number is invalid.
     pub fn get_miner_slot(
         sortdb: &SortitionDB,
         tip: &BlockSnapshot,
