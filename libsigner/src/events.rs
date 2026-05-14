@@ -400,7 +400,7 @@ impl<T: SignerEventTrait> EventReceiver<T> for SignerEventReceiver<T> {
 
     /// Start listening on the given socket address.
     /// Returns the address that was bound.
-    /// Errors out if bind(2) fails
+    /// Panics if `HttpServer::http()` fails to bind to the listener address.
     fn bind(&mut self, listener: SocketAddr) -> Result<SocketAddr, EventError> {
         self.http_server = Some(HttpServer::http(listener).expect("failed to start HttpServer"));
         self.local_addr = Some(listener);
