@@ -197,7 +197,8 @@ impl NakamotoSigners {
     }
 
     /// Compute the reward set for the next reward cycle, store it, and write it to the .signers
-    /// contract.  `reward_cycle` is the _current_ reward cycle.
+    /// contract.  `reward_cycle` is the upcoming cycle the reward set is being computed *for*
+    /// (i.e. the cycle the prepare phase is preparing).
     pub fn handle_signer_stackerdb_update(
         clarity: &mut ClarityTransactionConnection,
         pox_constants: &PoxConstants,
