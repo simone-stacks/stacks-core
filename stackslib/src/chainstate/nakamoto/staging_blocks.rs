@@ -435,7 +435,7 @@ impl<'a> NakamotoStagingBlocksConnRef<'a> {
             .collect())
     }
 
-    /// Get all nakamoto blocks in a tenure
+    /// Get all processed nakamoto blocks in a tenure.
     pub fn get_nakamoto_blocks_in_tenure(
         &self,
         consensus_hash: &ConsensusHash,
