@@ -1530,7 +1530,8 @@ pub struct BlockResponseData {
 }
 
 impl BlockResponseData {
-    /// Create a new BlockResponseData for the provided tenure extend timestamp and unknown bytes
+    /// Create a new BlockResponseData from the provided tenure-extend timestamp, reject reason,
+    /// tenure-extend read-count timestamp, and failed-tx id. `unknown_bytes` is initialised empty.
     pub fn new(
         tenure_extend_timestamp: u64,
         reject_reason: RejectReason,
