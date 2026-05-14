@@ -963,7 +963,7 @@ impl LocalStateMachine {
         }
     }
 
-    /// Determines whether a signer with the `local_address` and `local_update` should capitulate
+    /// Determines whether a signer with the given `local_update` should capitulate
     /// its current miner view to a new state. This is not necessarily the same as the current global
     /// view of the miner as it is up to signers to capitulate before this becomes the finalized view.
     pub fn capitulate_miner_view(
