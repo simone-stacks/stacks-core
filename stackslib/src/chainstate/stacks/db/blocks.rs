@@ -3265,9 +3265,9 @@ impl StacksChainState {
     /// Pre-process and store an anchored block to staging, queuing it up for
     /// subsequent processing once all of its ancestors have been processed.
     ///
-    /// Caller must have called SortitionDB::expects_stacks_block() to determine if this block belongs
-    /// to the blockchain.  The consensus_hash is the hash of the burnchain block whose sortition
-    /// elected the given Stacks block.
+    /// Caller must have called SortitionHandleTx::expects_stacks_block_in_fork() to determine if
+    /// this block belongs to the blockchain.  The consensus_hash is the hash of the burnchain block
+    /// whose sortition elected the given Stacks block.
     ///
     /// If we find the same Stacks block in two or more burnchain forks, insert it there too.
     ///
