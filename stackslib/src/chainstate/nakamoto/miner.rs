@@ -274,7 +274,7 @@ impl NakamotoBlockBuilder {
 
     /// Make a Nakamoto block builder appropriate for building atop the given block header
     ///
-    /// * `parent_stacker_header` - the stacks header this builder's block will build off
+    /// * `parent_stacks_header` - the stacks header this builder's block will build off
     ///
     /// * `tenure_id_consensus_hash` - consensus hash of this tenure's burnchain block.
     ///    This is the consensus hash that goes into the block header.
@@ -289,6 +289,13 @@ impl NakamotoBlockBuilder {
     /// * `bitvec_len` - the length of the bitvec of reward addresses that should be punished or not in this block.
     ///
     /// * `soft_limit` - an optional soft limit for the block's clarity cost for this block
+    ///
+    /// * `contract_limit_percentage` - an optional cap (as a percentage of the block budget) for
+    ///    contract-call cost in this block
+    ///
+    /// * `timestamp` - an optional override for the block-header timestamp
+    ///
+    /// * `max_tenure_bytes` - the maximum total byte budget for the tenure
     ///
     pub fn new(
         parent_stacks_header: &StacksHeaderInfo,
