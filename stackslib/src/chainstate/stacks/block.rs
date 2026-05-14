@@ -811,8 +811,8 @@ impl StacksMicroblockHeader {
         StacksMicroblockHeader::first_unsigned(parent_block_hash, &Sha512Trunc256Sum([0u8; 32]))
     }
 
-    /// Create an unsigned microblock header from its parent
-    /// Return an error on overflow
+    /// Create an unsigned microblock header from its parent.
+    /// Returns `None` if `parent_header.sequence + 1` overflows.
     pub fn from_parent_unsigned(
         parent_header: &StacksMicroblockHeader,
         tx_merkle_root: &Sha512Trunc256Sum,
