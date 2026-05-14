@@ -963,8 +963,8 @@ impl<NC: NeighborComms> NakamotoInvStateMachine<NC> {
 
     /// Finish asking for inventories, and update inventory state.
     /// Returns Ok(num-messages, true) if an inv state machine learned something.
-    /// Returns Ok(num-messages, false) if not
-    /// Returns Err(..) on I/O errors
+    /// Returns Ok(num-messages, false) if not. Per-peer I/O errors are logged and the
+    /// corresponding neighbor is marked broken via `add_broken`; they are not propagated.
     pub fn process_getnakamotoinv_finishes(
         &mut self,
         network: &mut PeerNetwork,
