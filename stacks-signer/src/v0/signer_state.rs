@@ -98,7 +98,7 @@ pub struct ReplayScope {
     pub past_tip: NewBurnBlock,
 }
 
-/// Optional `TxReplayScope`, representing the potential absence of a replay scope.
+/// Optional `ReplayScope`, representing the potential absence of a replay scope.
 pub type ReplayScopeOpt = Option<ReplayScope>;
 
 /// Represents the Tx Replay state
