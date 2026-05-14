@@ -3116,7 +3116,7 @@ impl NakamotoChainState {
     }
 
     /// Get the status of a Nakamoto block.
-    /// Returns Some(accepted?, orphaned?) on success
+    /// Returns Some(processed?, orphaned?) on success
     /// Returns None if there's no such block
     /// Returns Err on DBError
     pub fn get_nakamoto_block_status(
