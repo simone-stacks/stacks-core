@@ -614,8 +614,9 @@ impl NakamotoChainState {
     }
 
     /// Check that a consensus hash is on the canonical burnchain fork
-    /// Returns Some(corresponding snapshot) if so
-    /// Returns None if it's not on the canonical fork
+    /// Returns Ok(Some(corresponding snapshot)) if so
+    /// Returns Ok(None) if the consensus hash has no snapshot, or its snapshot is not on the canonical fork
+    /// Returns Err(..) on DB error
     pub(crate) fn check_valid_consensus_hash<SH: SortitionHandle>(
         sort_handle: &mut SH,
         ch: &ConsensusHash,
