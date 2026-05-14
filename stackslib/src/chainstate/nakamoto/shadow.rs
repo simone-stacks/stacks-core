@@ -171,7 +171,7 @@ impl NakamotoBlock {
     ///
     /// Verifies the following:
     /// -- (self.header.consensus_hash) that this block falls into this block-commit's tenure
-    /// -- (self.header.burn_spent) that this block's burn total matches `burn_tip`'s total burn
+    /// -- (self.header.burn_spent) that this block's burn total matches `tenure_burn_chain_tip`'s total burn
     /// -- if this block has a tenure change, then it's consistent with the miner's public key and
     /// self.header.consensus_hash
     ///
