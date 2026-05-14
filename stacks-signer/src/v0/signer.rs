@@ -2265,7 +2265,9 @@ impl Signer {
         }
     }
 
-    /// Helper for logging insert_block error
+    /// Helper for logging an `insert_block` error and then aborting the signer process.
+    /// This function does not return — it `panic!`s after logging. Callers wired up via
+    /// `.unwrap_or_else(|e| self.handle_insert_block_error(e))` are signalling intent to halt.
     pub fn handle_insert_block_error(&self, e: DBError) {
         error!("{self}: Failed to insert block into signer-db: {e:?}");
         panic!("{self} Failed to write block to signerdb: {e}");
