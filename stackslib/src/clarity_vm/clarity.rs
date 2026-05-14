@@ -191,7 +191,7 @@ pub trait WritableMarfStore:
 /// These needs are each captured in distinct methods for committing this transaction.
 pub trait ClarityMarfStoreTransaction {
     /// Commit all inserted metadata and associate it with the block trie identified by `target`.
-    /// It can later be deleted via `drop_metadata_for()` if given the same taret.
+    /// It can later be deleted via `drop_metadata_for_trie()` if given the same target.
     /// Returns Ok(()) on success
     /// Returns Err(..) on error
     fn commit_metadata_for_trie(&mut self, target: &StacksBlockId) -> Result<(), VmExecutionError>;
