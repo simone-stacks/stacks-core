@@ -934,7 +934,7 @@ pub fn special_delete_entry_v205(
 /// # Errors:
 /// - [`RuntimeCheckErrorKind`] cost errors (e.g., `CostOverflow`, `CostBalanceExceeded`) from [`runtime_cost`].
 /// - [`RuntimeCheckErrorKind::IncorrectArgumentCount`] if there aren't 2 arguments.
-/// - [`RuntimeCheckErrorKind::GetBlockInfoExpectPropertyName`] if `args[0]` isn't a ClarityName or isn't a valid [`BlockInfoProperty`].
+/// - [`RuntimeCheckErrorKind::Unreachable`] if `args[0]` isn't a ClarityName or isn't a valid [`BlockInfoProperty`] (the static analyzer normally rejects this with [`StaticCheckErrorKind::GetBlockInfoExpectPropertyName`] before reaching runtime).
 /// - [`RuntimeCheckErrorKind::TypeValueError`] if `args[1]` doesn't evaluate to a `uint`.
 /// - [`VmExecutionError`] propagated from [`eval`] when evaluating `args[1]`.
 /// - [`VmInternalError`] from database operations when retrieving block information.
@@ -1098,8 +1098,8 @@ pub fn special_get_block_info(
 ///
 /// # Errors:
 /// - [`RuntimeCheckErrorKind::IncorrectArgumentCount`] if there aren't 2 arguments.
-/// - [`RuntimeCheckErrorKind::GetBlockInfoExpectPropertyName`] if `args[0]` isn't a ClarityName.
-/// - [`RuntimeCheckErrorKind::NoSuchBurnBlockInfoProperty`] if `args[0]` isn't a [`BurnBlockInfoProperty`].
+/// - [`RuntimeCheckErrorKind::Unreachable`] if `args[0]` isn't a ClarityName (the static analyzer normally rejects this).
+/// - [`RuntimeCheckErrorKind::Unreachable`] if `args[0]` isn't a [`BurnBlockInfoProperty`] (the static analyzer normally rejects this with [`StaticCheckErrorKind::NoSuchBurnBlockInfoProperty`]).
 /// - [`RuntimeCheckErrorKind::TypeValueError`] if `args[1]` doesn't evaluate to a `uint`.
 /// - [`RuntimeCheckErrorKind`] cost errors (e.g., `CostOverflow`, `CostBalanceExceeded`) from [`runtime_cost`].
 /// - [`VmExecutionError`] propagated from [`eval`] when evaluating `args[1]`.
@@ -1302,7 +1302,7 @@ pub fn special_get_stacks_block_info(
 ///
 /// # Errors:
 /// - [`RuntimeCheckErrorKind::IncorrectArgumentCount`] if there aren't 2 arguments.
-/// - [`RuntimeCheckErrorKind::GetTenureInfoExpectPropertyName`] if `args[0]` isn't a ClarityName or isn't a valid [`TenureInfoProperty`].
+/// - [`RuntimeCheckErrorKind::Unreachable`] if `args[0]` isn't a ClarityName or isn't a valid [`TenureInfoProperty`] (the static analyzer normally rejects this with [`StaticCheckErrorKind::GetTenureInfoExpectPropertyName`] before reaching runtime).
 /// - [`RuntimeCheckErrorKind::TypeValueError`] if `args[1]` doesn't evaluate to a `uint`.
 /// - [`RuntimeCheckErrorKind`] cost errors (e.g., `CostOverflow`, `CostBalanceExceeded`) from [`runtime_cost`].
 /// - [`VmExecutionError`] propagated from [`eval`] when evaluating `args[1]`.
