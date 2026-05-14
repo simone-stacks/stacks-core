@@ -139,7 +139,7 @@ impl HttpResponse for RPCNakamotoTenureInfoRequestHandler {
 }
 
 impl StacksHttpRequest {
-    /// Make a new getinfo request to this endpoint
+    /// Make a new get-tenure-info request to this endpoint
     pub fn new_get_nakamoto_tenure_info(host: PeerHost) -> StacksHttpRequest {
         StacksHttpRequest::new_for_peer(
             host,

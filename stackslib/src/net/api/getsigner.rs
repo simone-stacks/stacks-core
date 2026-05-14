@@ -164,7 +164,7 @@ impl HttpResponse for GetSignerRequestHandler {
 }
 
 impl StacksHttpRequest {
-    /// Make a new getinfo request to this endpoint
+    /// Make a new getsigner request to this endpoint
     pub fn new_getsigner(
         host: PeerHost,
         signer_pubkey: &Secp256k1PublicKey,

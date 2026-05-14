@@ -150,7 +150,7 @@ impl HttpResponse for RPCNakamotoTenureTipRequestHandler {
 }
 
 impl StacksHttpRequest {
-    /// Make a new getinfo request to this endpoint
+    /// Make a new get-tenure-tip request to this endpoint
     pub fn new_get_tenure_tip(host: PeerHost, consensus_hash: &ConsensusHash) -> StacksHttpRequest {
         StacksHttpRequest::new_for_peer(
             host,

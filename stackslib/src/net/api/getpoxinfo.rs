@@ -634,7 +634,7 @@ impl HttpResponse for RPCPoxInfoRequestHandler {
 }
 
 impl StacksHttpRequest {
-    /// Make a new getinfo request to this endpoint
+    /// Make a new getpoxinfo request to this endpoint
     pub fn new_getpoxinfo(host: PeerHost, tip_req: TipRequest) -> StacksHttpRequest {
         StacksHttpRequest::new_for_peer(
             host,

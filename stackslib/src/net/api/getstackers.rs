@@ -218,7 +218,7 @@ impl HttpResponse for GetStackersRequestHandler {
 }
 
 impl StacksHttpRequest {
-    /// Make a new getinfo request to this endpoint
+    /// Make a new getstackers request to this endpoint
     pub fn new_getstackers(
         host: PeerHost,
         cycle_num: u64,
