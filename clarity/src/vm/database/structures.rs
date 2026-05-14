@@ -1159,9 +1159,9 @@ impl STXBalance {
     }
 
     /// Returns a canonicalized STXBalance at a given burn_block_height
-    /// (i.e., if burn_block_height >= unlock_height, then return struct where
-    ///   amount_unlocked = 0, unlock_height = 0), and the amount of tokens which
-    ///   are "unlocked" by the canonicalization
+    /// (i.e., if burn_block_height >= unlock_height, then return
+    ///   STXBalance::Unlocked { amount: total_balance }), and the amount of
+    ///   tokens which are "unlocked" by the canonicalization.
     pub fn canonical_repr_at_block(
         &self,
         burn_block_height: u64,
