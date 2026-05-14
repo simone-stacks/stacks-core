@@ -854,7 +854,7 @@ impl Relayer {
         }
     }
 
-    /// Wrapper around inner_process_new_nakamoto_block
+    /// Wrapper around `process_new_nakamoto_block_ext` that pins `force_broadcast` to `false`.
     pub fn process_new_nakamoto_block(
         burnchain: &Burnchain,
         sortdb: &SortitionDB,
