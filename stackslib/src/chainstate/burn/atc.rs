@@ -145,7 +145,7 @@ impl AtcRational {
 /// that the miner underpaid relative to their past performance, and the closer to 0.0 this ratio
 /// is, the more likely the null miner wins and this miner loses.
 ///
-/// This table is generated with `make_null_miner_lookup_table()` above.
+/// This table is generated with the `make_null_miner_lookup_table()` test below.
 pub(crate) const ATC_LOOKUP: [AtcRational; 1024] = [
     AtcRational(Uint256([14665006693661589504, 0, 0, 0])),
     AtcRational(Uint256([14663943061084833792, 0, 0, 0])),
