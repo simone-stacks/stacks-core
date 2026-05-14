@@ -318,7 +318,7 @@ impl RewardSet {
     }
 
     /// Return the total `weight` of all signers in the reward set.
-    /// If there are no reward set signers, a ChainstateError is returned.
+    /// If there are no reward set signers, returns `Err(String)` describing the failure.
     pub fn total_signing_weight(&self) -> Result<u32, String> {
         let Some(ref reward_set_signers) = self.signers else {
             return Err("Unable to calculate total weight - No signers in reward set".to_string());
