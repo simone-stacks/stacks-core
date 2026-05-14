@@ -1062,8 +1062,9 @@ impl RelayerThread {
     ///
     /// Takes the Nakamoto chain tip (consensus hash, block header hash).
     ///
-    /// Returns the (the most recent burn snapshot, the most recent stakcs tip, the commit-op) on success
-    /// Returns None if we fail somehow.
+    /// Returns Ok(LastCommit) on success — its block_commit/burn_tip/stacks_tip
+    /// fields are the most recent commit-op, burn snapshot, and stacks tip.
+    /// Returns Err(NakamotoNodeError) if we fail somehow.
     ///
     /// TODO: unit test
     pub(crate) fn make_block_commit(
