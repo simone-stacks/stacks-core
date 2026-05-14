@@ -20,7 +20,7 @@
 //! This library provides a contract-call special case handler
 //! `crate::handle_contract_call_special_cases()` which matches a
 //! contract-call result against zero-address published contracts
-//! `pox`, `pox-2`, and `pox-3`. For each of those contracts, it
+//! `pox`, `pox-2`, `pox-3`, and `pox-4`. For each of those contracts, it
 //! checks if the function called requires applying or updating the
 //! `STXBalance` struct's locks, and if the function was successfully
 //! invoked. If so, it updates the PoX lock.

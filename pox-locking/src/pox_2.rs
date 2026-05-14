@@ -56,7 +56,7 @@ pub fn is_read_only(func_name: &str) -> bool {
 }
 
 /// Parse the returned value from PoX `stack-stx` and `delegate-stack-stx` functions
-///  from pox-2.clar or pox-3.clar into a format more readily digestible in rust.
+///  from pox-2.clar, pox-3.clar, or pox-4.clar into a format more readily digestible in rust.
 /// Panics if the supplied value doesn't match the expected tuple structure
 pub fn parse_pox_stacking_result(
     result: &Value,
@@ -98,7 +98,7 @@ pub fn parse_pox_stacking_result(
     }
 }
 
-/// Parse the returned value from PoX2 or PoX3 `stack-extend` and `delegate-stack-extend` functions
+/// Parse the returned value from PoX2, PoX3, or PoX4 `stack-extend` and `delegate-stack-extend` functions
 ///  into a format more readily digestible in rust.
 /// Panics if the supplied value doesn't match the expected tuple structure
 pub fn parse_pox_extend_result(result: &Value) -> std::result::Result<(PrincipalData, u64), i128> {
@@ -133,7 +133,7 @@ pub fn parse_pox_extend_result(result: &Value) -> std::result::Result<(Principal
     }
 }
 
-/// Parse the returned value from PoX2 or PoX3 `stack-increase` function
+/// Parse the returned value from PoX2, PoX3, or PoX4 `stack-increase` function
 ///  into a format more readily digestible in rust.
 /// Panics if the supplied value doesn't match the expected tuple structure
 pub fn parse_pox_increase(result: &Value) -> std::result::Result<(PrincipalData, u128), i128> {
