@@ -1412,7 +1412,7 @@ impl BlockResponse {
         }
     }
 
-    /// Get the block accept data from the block response
+    /// Get the block rejection data from the block response
     pub fn as_block_rejection(&self) -> Option<&BlockRejection> {
         match self {
             BlockResponse::Rejected(rejection) => Some(rejection),
