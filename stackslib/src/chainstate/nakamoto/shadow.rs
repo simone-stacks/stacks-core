@@ -422,7 +422,7 @@ impl NakamotoChainState {
 }
 
 impl NakamotoBlockBuilder {
-    /// This function should be called before `tenure_begin`.
+    /// This function should be called before `shadow_tenure_begin`.
     /// It creates a MinerTenureInfo struct which owns connections to the chainstate and sortition
     /// DBs, so that block-processing is guaranteed to terminate before the lives of these handles
     /// expire.
