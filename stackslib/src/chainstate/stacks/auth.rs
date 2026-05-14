@@ -930,7 +930,7 @@ impl TransactionSpendingCondition {
         }
     }
 
-    /// Get the mainnet account address of the spending condition
+    /// Get the testnet account address of the spending condition
     pub fn address_testnet(&self) -> StacksAddress {
         match *self {
             TransactionSpendingCondition::Singlesig(ref data) => data.address_testnet(),
