@@ -279,9 +279,10 @@ impl<'a> NakamotoStagingBlocksConnRef<'a> {
         Ok(res.is_some())
     }
 
-    /// Get the block ID, processed-status, orphan-status, and signing weight of the non-orphaned
+    /// Get the block ID, processed-status, orphan-status, and signing weight of the
     /// block with the given consensus hash and sighash with the most amount of signatures.
-    /// There will be at most one such block.
+    /// There will be at most one such block. The returned `orphaned` flag lets the caller
+    /// decide how to handle an orphaned match — the query does not filter on it.
     ///
     /// NOTE: for Nakamoto blocks, the sighash is the same as the block hash.
     pub fn get_block_processed_and_signed_weight(
