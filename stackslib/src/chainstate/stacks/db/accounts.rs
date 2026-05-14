@@ -981,8 +981,9 @@ impl StacksChainState {
     }
 
     /// Find the latest miner reward to mature, assuming that there are mature rewards.
-    /// Returns a list of payments to make to each address -- miners and user-support burners -- as
-    /// well as an info struct about where the rewards took place on the chain.
+    /// Returns `Some((miner_reward, user_support_payments, parent_miner_reward, info))` where
+    /// `user_support_payments` is the list of user-support-burner payments and `info` describes
+    /// where the rewards took place on the chain. Returns `None` if no mature rewards exist.
     pub fn find_mature_miner_rewards(
         clarity_tx: &mut ClarityTx,
         sortdb_conn: &Connection,
