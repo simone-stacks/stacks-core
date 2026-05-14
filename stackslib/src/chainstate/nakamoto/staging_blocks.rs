@@ -544,8 +544,7 @@ impl<'a> NakamotoStagingBlocksConnRef<'a> {
 
 impl NakamotoStagingBlocksTx<'_> {
     /// Notify the staging database that a given stacks block has been processed.
-    /// This will update the attachable status for children blocks, as well as marking the stacks
-    ///  block itself as processed.
+    /// This marks the staging row for `block` as processed.
     pub fn set_block_processed(&self, block: &StacksBlockId) -> Result<(), ChainstateError> {
         let clear_staged_block =
             "UPDATE nakamoto_staging_blocks SET processed = 1, processed_time = ?2
@@ -559,8 +558,8 @@ impl NakamotoStagingBlocksTx<'_> {
     }
 
     /// Modify the staging database that a given stacks block can never be processed.
-    /// This will update the attachable status for children blocks, as well as marking the stacks
-    /// block itself as orphaned.
+    /// This marks any staging row whose `parent_block_id` is `block` as orphaned, and marks
+    /// the staging row for `block` itself as both processed and orphaned.
     pub fn set_block_orphaned(&self, block: &StacksBlockId) -> Result<(), ChainstateError> {
         let update_dependents = "UPDATE nakamoto_staging_blocks SET orphaned = 1
                                  WHERE parent_block_id = ?";
