@@ -52,7 +52,7 @@ pub trait SignerRunLoop<R: Send, T: SignerEventTrait> {
     /// This is the main loop body for the signer. It continuously receives events from
     /// `event_recv`, polling for up to `self.get_event_timeout()` units of time.  Once it has
     /// polled for events, they are fed into `run_one_pass()`.  This continues until either
-    /// `run_one_pass()` returns `false`, or the event receiver hangs up.  At this point, this
+    /// `run_one_pass()` returns `Some(R)`, or the event receiver hangs up.  At this point, this
     /// method calls the `event_stop_signaler.send()` to terminate the receiver.
     ///
     /// This would run in a separate thread from the event receiver.
