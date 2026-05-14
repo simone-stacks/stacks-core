@@ -131,7 +131,7 @@ impl BurnSamplePoint {
     }
 
     /// Make a burn distribution -- a list of (burn total, block candidate) pairs -- from a block's
-    /// block commits and user support burns.
+    /// block commits.
     ///
     /// All operations need to be supplied in an ordered Vec of Vecs containing
     ///   the ops at each block height in a mining commit window.  Normally, this window
@@ -139,9 +139,6 @@ impl BurnSamplePoint {
     ///   sunset.  In either of these two cases, the window is only one block.  The code does not
     ///   consider which window is active; it merely deduces it by inspecting the length of the
     ///   given `block_commits` argument.
-    ///
-    /// If a burn refers to more than one commitment, its burn amount is *split* between those
-    ///   commitments
     ///
     ///  Burns are evaluated over the mining commitment window, where the effective burn for
     ///   a commitment is := min(last_burn_amount, median over the window)
