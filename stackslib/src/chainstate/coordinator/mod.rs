@@ -558,8 +558,7 @@ impl<
     }
 
     /// This is the Stacks 2.x coordinator loop body, which handles communications
-    /// from the given `comms`.  It returns `true` if the coordinator is still running, and `false`
-    /// if not.
+    /// dispatched by the given event `bits`.  Returns `true` if the coordinator is still running, and `false` otherwise.
     pub fn handle_comms_epoch2(&mut self, bits: u8, miner_status: Arc<Mutex<MinerStatus>>) -> bool {
         // timeout so that we handle Ctrl-C a little gracefully
         if (bits & (CoordinatorEvents::NEW_STACKS_BLOCK as u8)) != 0 {
