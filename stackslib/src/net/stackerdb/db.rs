@@ -395,8 +395,15 @@ impl StackerDBTx<'_> {
         Ok(())
     }
 
-    /// Add or replace a chunk for a given reward cycle, if it is valid
-    /// Otherwise, this errors out with Error::StaleChunk
+    /// Add or replace a chunk for a given reward cycle, if it is valid.
+    /// Otherwise, returns one of:
+    /// * `net_error::StackerDBChunkTooBig` if `chunk` exceeds the configured maximum size,
+    /// * `net_error::NoSuchSlot` if the slot does not exist for this DB,
+    /// * `net_error::BadSlotSigner` if `slot_desc`'s signature does not verify under the slot's
+    ///   configured signer,
+    /// * `net_error::StaleChunk` if `slot_desc.slot_version` is not strictly greater than the
+    ///   stored slot's version, or
+    /// * `net_error::TooManySlotWrites` if `slot_desc.slot_version` exceeds `config.max_writes`.
     pub fn try_replace_chunk(
         &self,
         smart_contract: &QualifiedContractIdentifier,
