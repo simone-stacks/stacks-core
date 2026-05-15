@@ -476,7 +476,7 @@ impl StacksClient {
         Ok(self.get_reward_set(reward_cycle)?.stacker_set.signers)
     }
 
-    /// Get the reward set signers from the stacks node for the given reward cycle
+    /// Get the reward set from the stacks node for the given reward cycle
     pub fn get_reward_set(&self, reward_cycle: u64) -> Result<GetStackersResponse, ClientError> {
         debug!("StacksClient: Getting reward set signers";
             "reward_cycle" => reward_cycle,
