@@ -1257,7 +1257,7 @@ impl<'a, 'b, 'hooks> ExecutionState<'a, 'b, 'hooks> {
     /// `allow_private` should always be set to `false` for user transactions:
     ///  this ensures that only `define-public` and `define-read-only` methods can
     ///  be invoked. The `allow_private` mode should only be used by
-    ///  `Environment::execute_contract_allow_private`.
+    ///  `ExecutionState::execute_contract_allow_private`.
     fn inner_execute_contract(
         &mut self,
         invoke_ctx: &InvocationContext,
