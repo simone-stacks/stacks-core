@@ -841,7 +841,8 @@ impl NakamotoBlockHeader {
     /// - Order of signatures is maintained vs signer set
     ///
     /// Returns the signing weight on success.
-    /// Returns ChainstateError::InvalidStacksBlock on error
+    /// Returns ChainstateError::InvalidStacksBlock when the signatures fail validation,
+    /// or ChainstateError::NoRegisteredSigners if the reward set has no signers.
     #[cfg_attr(test, mutants::skip)]
     pub fn verify_signer_signatures(&self, reward_set: &RewardSet) -> Result<u32, ChainstateError> {
         let message = self.signer_signature_hash();
