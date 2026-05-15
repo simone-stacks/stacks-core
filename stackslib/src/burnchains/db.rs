@@ -341,7 +341,7 @@ pub static SCHEMA_3: &[&str] = &[
 
 impl BurnchainDBTransaction<'_> {
     /// Store a burnchain block header into the burnchain database.
-    /// Returns the row ID on success.
+    /// Uses `INSERT OR IGNORE`, so a duplicate header is silently dropped.
     pub(crate) fn store_burnchain_db_entry(
         &self,
         header: &BurnchainBlockHeader,
