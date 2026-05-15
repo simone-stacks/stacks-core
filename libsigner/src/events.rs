@@ -111,7 +111,7 @@ pub struct BlockProposalData {
 }
 
 impl BlockProposalData {
-    /// Create a new BlockProposalData for the provided server version and unknown bytes
+    /// Create a new BlockProposalData for the provided server version and miner diagnostic data.
     pub fn new(server_version: String, miner_diagnostic_data: MinerDiagnosticData) -> Self {
         Self {
             version: BLOCK_PROPOSAL_DATA_VERSION,
