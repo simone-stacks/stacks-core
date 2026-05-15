@@ -5328,7 +5328,8 @@ impl StacksChainState {
     /// processed yet.
     ///
     /// Returns a `StacksEpochReceipt` containing receipts and events from the transactions executed
-    /// in the block, and a `PreCommitClarityBlock` struct.
+    /// in the block, a `PreCommitClarityBlock` struct, and an `Option<RewardSetData>` describing
+    /// the reward set just computed at this block (if any).
     ///
     /// The `StacksEpochReceipts` contains the list of transaction
     /// receipts for the preceeding microblock stream that the
