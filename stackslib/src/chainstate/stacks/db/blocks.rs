@@ -4593,7 +4593,9 @@ impl StacksChainState {
     }
 
     /// Process all STX that unlock at this block height.
-    /// Return the total number of uSTX unlocked in this block
+    /// Returns `(total_unlocked_ustx, lockup_events)`, where `total_unlocked_ustx` is the total
+    /// number of uSTX unlocked in this block and `lockup_events` is the list of `STXMintEvent`s
+    /// emitted for each unlocked recipient.
     pub fn process_stx_unlocks(
         clarity_tx: &mut ClarityTx<'_, '_>,
     ) -> Result<(u128, Vec<StacksTransactionEvent>), Error> {
