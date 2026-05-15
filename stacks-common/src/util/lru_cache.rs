@@ -204,8 +204,7 @@ impl<K: Eq + std::hash::Hash + Clone, V: Copy> LruCache<K, V> {
 
     /// Flush all dirty values in the cache, calling the given function, `f`,
     /// for each dirty value.
-    /// Outer result is an error iff the cache is corrupted and should be discarded.
-    /// Inner result is an error iff the function, `f`, returns an error.
+    /// Returns an error iff the function, `f`, returns an error.
     pub fn flush<E>(
         &mut self,
         mut f: impl FnMut(&K, V) -> Result<(), E>,
