@@ -2645,8 +2645,10 @@ impl Relayer {
 
     #[cfg_attr(test, mutants::skip)]
     /// Relay Nakamoto blocks.
-    /// By default, only sends them if we don't have them yet.
-    /// This can be overridden by setting `force_send` to true.
+    /// Each block is skipped if it was already relayed within
+    /// `connection_opts.nakamoto_push_interval_ms` (tracked via
+    /// `self.recently_sent_nakamoto_blocks`), or if its tenure is not in the
+    /// last `connection_opts.max_nakamoto_block_relay_age` sortitions.
     pub fn relay_epoch3_blocks(
         &mut self,
         _local_peer: &LocalPeer,
