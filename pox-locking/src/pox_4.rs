@@ -68,7 +68,7 @@ pub fn pox_lock_v4(
 /// Returns Ok(lock_amount) when successful
 ///
 /// # Errors
-/// - Returns Error::PoxExtendNotLocked if this function was called on an account
+/// - Returns LockingError::PoxExtendNotLocked if this function was called on an account
 ///   which isn't locked. This *should* have been checked by the PoX v4 contract,
 ///   so this should surface in a panic.
 pub fn pox_lock_extend_v4(
@@ -104,7 +104,7 @@ pub fn pox_lock_extend_v4(
 /// Returns Ok( account snapshot ) when successful
 ///
 /// # Errors
-/// - Returns Error::PoxExtendNotLocked if this function was called on an account
+/// - Returns LockingError::PoxExtendNotLocked if this function was called on an account
 ///   which isn't locked. This *should* have been checked by the PoX v4 contract,
 ///   so this should surface in a panic.
 pub fn pox_lock_increase_v4(
