@@ -507,10 +507,9 @@ impl StacksChainState {
 
     // TODO: add tests from mutation testing results #4854
     #[cfg_attr(test, mutants::skip)]
-    /// Do all the necessary Clarity operations at the start of a PoX reward cycle.
-    /// Currently, this just means applying any auto-unlocks to Stackers who qualified.
-    ///
-    /// This should only be called for PoX v4 cycles.
+    /// No-op start-of-cycle hook for PoX v4.  PoX v4 has no Rust-side start-of-cycle
+    /// operations (unlike v2/v3, which apply missed auto-unlocks here); kept for symmetry
+    /// with the v2 and v3 helpers.  Returns an empty event vector.
     pub fn handle_pox_cycle_start_pox_4(
         _clarity: &mut ClarityTransactionConnection,
         _cycle_number: u64,
