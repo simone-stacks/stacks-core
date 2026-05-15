@@ -1091,10 +1091,10 @@ pub fn special_get_block_info(
 }
 
 /// Handles the `get-burn-block-info?` special function.
-/// Interprets `args` as variables `[property_name, burn_block_height]`, and returns
-/// a property value determined by `property_name`:
-/// - `header_hash` returns the burn block header hash at `burn_block_height`
-/// - `pox_addrs` returns the list of PoX addresses paid out at `burn_block_height`
+/// Interprets `args` as variables `[property-name, burn-block-height]`, and returns
+/// a property value determined by `property-name`:
+/// - `header-hash` returns the burn block header hash at `burn-block-height`
+/// - `pox-addrs` returns the list of PoX addresses paid out at `burn-block-height`
 ///
 /// # Errors:
 /// - [`RuntimeCheckErrorKind::IncorrectArgumentCount`] if there aren't 2 arguments.
