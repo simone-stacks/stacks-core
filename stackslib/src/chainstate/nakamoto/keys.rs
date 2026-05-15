@@ -57,7 +57,9 @@ pub fn tenure_start_block_id(ch: &ConsensusHash) -> String {
     format!("nakamoto::headers::tenure_start_block_id::{}", ch)
 }
 
-/// MARF key to map a tenure to its final block's block ID
+/// MARF key marking a tenure as finished. The stored value is the boolean
+/// `true` (see `make_bool_value`); presence of this key indicates the tenure
+/// has ended, absence indicates it is still in progress.
 pub fn finished_tenure_consensus_hash(ch: &ConsensusHash) -> String {
     format!("nakamoto::tenures::finished_tenure_consensus_hash::{}", ch)
 }
