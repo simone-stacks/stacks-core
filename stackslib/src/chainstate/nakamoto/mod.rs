@@ -4397,7 +4397,7 @@ impl NakamotoChainState {
     /// `mine_anchored_block` in miner.rs.
     /// Processes matured miner rewards, alters liquid supply of ustx, processes
     /// stx lock events, and marks the microblock public key as used
-    /// Returns stx lockup events.
+    /// Returns the stx lockup events and (on a new tenure) the SIP-031 mint/transfer event.
     pub fn finish_block(
         clarity_tx: &mut ClarityTx,
         miner_payouts: Option<&MaturedMinerRewards>,
