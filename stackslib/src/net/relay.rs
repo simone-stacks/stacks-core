@@ -1766,8 +1766,8 @@ impl Relayer {
     /// Verify that a relayed transaction is not problematic.  This is a static check -- we only
     /// look at the tx contents.
     ///
-    /// Return true if the check passes -- i.e. it's not problematic
-    /// Return false if the check fails -- i.e. it is problematic
+    /// Return `Ok(())` if the check passes -- i.e. it's not problematic
+    /// Return `Err(..)` if the check fails -- i.e. it is problematic
     pub fn static_check_problematic_relayed_tx(
         mainnet: bool,
         epoch_id: StacksEpochId,
