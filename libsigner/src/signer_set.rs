@@ -48,7 +48,7 @@ pub enum Error {
 }
 
 impl SignerEntries {
-    /// Try to parse the reward set defined by `NakamotoSignEntry` into the SignerEntries struct
+    /// Try to parse the reward set defined by `NakamotoSignerEntry` into the SignerEntries struct
     pub fn parse(is_mainnet: bool, reward_set: &[NakamotoSignerEntry]) -> Result<Self, Error> {
         let mut signer_pk_to_id = HashMap::with_capacity(reward_set.len());
         let mut signer_id_to_pk = HashMap::with_capacity(reward_set.len());
