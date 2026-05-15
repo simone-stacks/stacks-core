@@ -479,12 +479,9 @@ impl NakamotoTenureDownloader {
 
     /// Produce the next HTTP request that, when successfully executed, will fetch the data needed
     /// to advance this state machine.
-    /// Not all states require an HTTP request for advanceement.
     ///
-    /// Returns Ok(Some(request)) if a request is needed
-    /// Returns Ok(None) if a request is not needed (i.e. we're waiting for some other machine's
-    /// state)
-    /// Returns Err(()) if we're done.
+    /// Returns Ok(Some(request)) if a request is needed (any non-`Done` state).
+    /// Returns Err(()) if we're done (the `Done` state).
     pub fn make_next_download_request(
         &self,
         peerhost: PeerHost,
