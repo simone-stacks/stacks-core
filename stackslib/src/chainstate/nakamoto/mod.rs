@@ -2544,7 +2544,9 @@ impl NakamotoChainState {
             .map_err(ChainstateError::from)
     }
 
-    /// Return the ExecutionCost of `block`
+    /// Return the total tenure ExecutionCost up to and including `block`.
+    /// This queries the `total_tenure_cost` column (cumulative); use the `cost` column for the
+    /// per-block ExecutionCost.
     pub fn get_block_cost(
         chainstate_conn: &Connection,
         block: &StacksBlockId,
