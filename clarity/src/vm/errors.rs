@@ -173,8 +173,8 @@ pub enum RuntimeError {
 /// These errors halt evaluation and fail the transaction.
 pub enum EarlyReturnError {
     /// Failed to unwrap an `Optional` (`none`) or `Response` (`err` or `ok`) Clarity value.
-    /// The `Box<Value>` holds the original or thrown value. Triggered by `try!`, `unwrap-or`, or
-    /// `unwrap-err-or`.
+    /// The `Box<Value>` holds the original or thrown value. Triggered by `try!`, `unwrap!`, or
+    /// `unwrap-err!`.
     UnwrapFailed(Box<Value>),
     /// An 'asserts!' expression evaluated to false.
     /// The `Box<Value>` holds the value provided as the second argument to `asserts!`.
