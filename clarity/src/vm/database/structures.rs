@@ -1036,7 +1036,8 @@ impl STXBalance {
     }
 
     /// This method returns the datastructure's lazy view of the unlock_height
-    ///  *while* factoring in the PoX 2 early unlock for PoX 1 and PoX 3 early unlock for PoX 2.
+    ///  *while* factoring in the PoX 2 early unlock for PoX 1, the PoX 3 early
+    ///  unlock for PoX 2, and the PoX 4 early unlock for PoX 3.
     /// This value is still lazy: this unlock height may be less than the current
     ///  burn block height, if so it will be updated in a canonicalized view.
     pub fn effective_unlock_height(
