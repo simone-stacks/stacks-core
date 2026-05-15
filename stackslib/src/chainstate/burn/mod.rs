@@ -113,7 +113,7 @@ pub struct BlockSnapshot {
 }
 
 impl SortitionHash {
-    /// Calculate a new sortition hash from the given burn header hash
+    /// Initial sortition hash, used before any burn header is mixed in.  It's all 0's.
     pub fn initial() -> SortitionHash {
         SortitionHash([0u8; 32])
     }
