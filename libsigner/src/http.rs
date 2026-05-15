@@ -123,7 +123,7 @@ pub fn decode_http_request(payload: &[u8]) -> Result<SignerHttpRequest, EventErr
 }
 
 /// Decode the HTTP response payload into its headers and body.
-/// Return the offset into payload where the body starts, and a table of headers.
+/// Return the table of headers and the offset into payload where the body starts.
 ///
 /// If the payload contains a status code other than 200, then RPCERror::HttpError(..) will be
 /// returned with the status code.
