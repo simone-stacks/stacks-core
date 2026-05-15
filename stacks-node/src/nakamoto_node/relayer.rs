@@ -2284,8 +2284,10 @@ impl RelayerThread {
         continue_running
     }
 
-    /// Reload config.burnchain to see if burn_fee_cap has changed.
-    /// If it has, update the miner spend amount and return true.
+    /// Reload `config.burnchain` and check whether it has changed from the last observed value.
+    /// Unconditionally update the miner's recorded spend amount and last-seen burnchain config.
+    /// Returns `(changed, current_burnchain_config)` where `changed` is true iff the burnchain
+    /// config differs from the last one observed (false on the first call).
     pub fn check_burnchain_config_changed(&self) -> (bool, BurnchainConfig) {
         let burnchain_config = self.config.get_burnchain_config();
         let last_burnchain_config_opt = self.globals.get_last_burnchain_config();
