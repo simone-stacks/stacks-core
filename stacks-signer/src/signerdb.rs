@@ -1738,7 +1738,9 @@ impl SignerDb {
             .collect()
     }
 
-    /// Record an observed block rejection_signature
+    /// Record an observed block rejection from a signer, identified by the signer's address and
+    /// the `RejectReasonPrefix` reject code.  Does not record a signature; signatures are recorded
+    /// by `add_block_signature`.
     pub fn add_block_rejection_signer_addr(
         &self,
         block_sighash: &Sha512Trunc256Sum,
