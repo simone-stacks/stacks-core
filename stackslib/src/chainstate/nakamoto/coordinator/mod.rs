@@ -765,10 +765,10 @@ impl<
     fn fault_injection_pause_nakamoto_block_processing() {}
 
     /// Handle one or more new Nakamoto Stacks blocks.
-    /// If we process a PoX anchor block, then return its block hash.  This unblocks processing the
-    /// next reward cycle's burnchain blocks.  Subsequent calls to this function will terminate
-    /// with Some(pox-anchor-block-hash) until the reward cycle info is processed in the sortition
-    /// DB.
+    /// When this function reaches the first Stacks block in the prepare phase for the next reward
+    /// cycle, it pauses to process burnchain sortitions for that cycle (via an inline call to
+    /// `handle_new_nakamoto_burnchain_block`) before continuing.  The successful return is always
+    /// `Ok(None)`; the `Option` in the return type is reserved for future use.
     pub fn handle_new_nakamoto_stacks_block(&mut self) -> Result<Option<BlockHeaderHash>, Error> {
         debug!("Handle new Nakamoto block");
         let canonical_sortition_tip = self.canonical_sortition_tip.clone().ok_or_else(|| {
