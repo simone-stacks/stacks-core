@@ -3918,8 +3918,8 @@ impl StacksChainState {
         Ok(None)
     }
 
-    /// Process a stream of microblocks
-    /// Return the fees and burns.
+    /// Process a stream of microblocks.
+    /// Returns `(fees, burns, receipts)` on success.
     pub fn process_microblocks_transactions(
         clarity_tx: &mut ClarityTx,
         microblocks: &[StacksMicroblock],
