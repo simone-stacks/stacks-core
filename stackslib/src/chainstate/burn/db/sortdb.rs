@@ -3125,7 +3125,7 @@ impl SortitionDB {
     }
 
     /// Get the schema version of a sortition DB, given the path to it.
-    /// Returns the version string, if it exists.
+    /// Returns the version number as a `u32`, if it exists.
     ///
     /// Does **not** migrate the database (like `open()` or `connect()` would)
     pub fn get_db_version_from_path(path: &str) -> Result<Option<u32>, db_error> {
