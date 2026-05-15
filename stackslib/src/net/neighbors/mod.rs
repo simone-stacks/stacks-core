@@ -392,8 +392,11 @@ impl PeerNetwork {
     /// Update the state of our peer graph walk.
     /// If we complete a walk, give back a walk result.
     /// Mask errors by restarting the graph walk.
-    /// Returns the walk result, and a true/false flag to indicate whether or not the work for the
-    /// walk was finished (i.e. we either completed the walk, or we reset the walk)
+    /// Returns a tuple `(done, walk_result_opt)`:
+    /// * `done` — `true` if the work for the walk was finished (i.e. we either completed the walk,
+    ///   or we reset the walk), `false` if there is more progress still to make.
+    /// * `walk_result_opt` — `Some(result)` if the walk ran to completion this call, `None`
+    ///   otherwise.
     pub fn walk_peer_graph(&mut self, ibd: bool) -> (bool, Option<NeighborWalkResult>) {
         if !self.setup_walk(ibd) {
             // nothing to do
