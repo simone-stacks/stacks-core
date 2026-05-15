@@ -1102,10 +1102,14 @@ impl ClarityDatabase<'_> {
     }
 
     /// Get the last-known burnchain block height.
-    /// Note that this is _not_ the burnchain height in which this block was mined!
-    /// This is the burnchain block height of the parent of the Stacks block at the current Stacks
-    /// block height (i.e. that returned by `get_index_block_header_hash` for
-    /// `get_current_block_height`).
+    ///
+    /// Behavior depends on the active Clarity epoch:
+    /// * Before epoch 3.0, this is the burnchain block height of the parent of the Stacks block
+    ///   at the current Stacks block height (i.e. that returned by `get_index_block_header_hash`
+    ///   for `get_current_block_height`) — note this is _not_ the burnchain height in which this
+    ///   block was mined.
+    /// * In epoch 3.0+, this is the current burnchain tip height (queried directly via
+    ///   `BurnStateDB::get_tip_burn_block_height`).
     pub fn get_current_burnchain_block_height(&mut self) -> Result<u32, VmExecutionError> {
         let cur_stacks_height = self.store.get_current_block_height();
 
