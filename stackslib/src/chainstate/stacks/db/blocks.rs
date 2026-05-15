@@ -4985,10 +4985,13 @@ impl StacksChainState {
 
     /// Called in both follower and miner block assembly paths.
     ///
-    /// Returns clarity_tx, list of receipts, microblock execution cost,
-    /// microblock fees, microblock burns, list of microblock tx receipts,
-    /// miner rewards tuples, the stacks epoch id, and a boolean that
-    /// represents whether the epoch transition has been applied.
+    /// Returns a `SetupBlockResult`, which contains: clarity_tx, list of receipts,
+    /// microblock execution cost, microblock fees, microblock burns, list of
+    /// microblock tx receipts, miner rewards tuples, the stacks epoch id, a boolean
+    /// that represents whether the epoch transition has been applied, the
+    /// burnchain-originated stack-stx / transfer-stx / delegate-stx / vote-for-agg-key
+    /// operations applied in this block, the auto-unlock events emitted by reward-cycle
+    /// processing, and an optional signer-set calculation result.
     ///
     /// The `burn_dbconn`, `sortition_dbconn`, and `conn` arguments
     ///  all reference the same sortition database through different
