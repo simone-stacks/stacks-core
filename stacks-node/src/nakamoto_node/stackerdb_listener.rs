@@ -749,7 +749,7 @@ impl StackerDBListenerComms {
     }
 
     /// Get the timestamp at which at least 70% of the signing power should be
-    /// willing to accept a time-based tenure extension.
+    /// willing to accept a time-based read-count extension.
     pub fn get_read_count_extend_timestamp(&self, weight_threshold: u32) -> u64 {
         let signer_read_count_timestamps = self
             .signer_read_count_timestamps
