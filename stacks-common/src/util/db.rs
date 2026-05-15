@@ -48,8 +48,10 @@ pub fn update_lock_table(conn: &Connection) {
     LOCK_TABLE.lock().unwrap().insert(k, v);
 }
 
-/// Called by `rusqlite` if we are waiting too long on a database lock
-/// If called too many times, will assume a deadlock and panic
+/// Called by `rusqlite` if we are waiting too long on a database lock.
+/// Logs an error with a backtrace and the current `LOCK_TABLE` every
+/// ~5 minutes of accumulated waiting, then keeps sleeping and returning
+/// `true` so `rusqlite` retries the lock indefinitely.
 pub fn tx_busy_handler(run_count: i32) -> bool {
     const AVG_SLEEP_TIME_MS: u64 = 100;
 
