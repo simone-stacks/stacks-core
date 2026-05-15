@@ -4491,7 +4491,7 @@ impl StacksChainState {
     }
 
     /// Process a single anchored block.
-    /// Return the fees and burns.
+    /// Returns `(fees, burns, receipts)` on success.
     pub fn process_block_transactions(
         clarity_tx: &mut ClarityTx,
         block_txs: &[StacksTransaction],
