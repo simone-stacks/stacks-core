@@ -484,9 +484,11 @@ impl NakamotoChainState {
         Ok(chainstate_conn.get_parent_tenure_consensus_hash(tip_block_id, consensus_hash)?)
     }
 
-    /// Get the number of blocks in a tenure, given a block ID.
+    /// Get `height_in_tenure` for the Nakamoto block identified by `block_id`
+    /// (i.e. its 1-indexed position within its tenure). When called with the
+    /// last block of a tenure, this equals the number of blocks in that tenure.
     /// Only works for Nakamoto blocks, not Stacks epoch2 blocks.
-    /// Returns 0 if there are no blocks in this tenure
+    /// Returns 0 if no row exists for `block_id`.
     pub fn get_nakamoto_tenure_length(
         chainstate_conn: &Connection,
         block_id: &StacksBlockId,
