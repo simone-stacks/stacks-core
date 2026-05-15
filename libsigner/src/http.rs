@@ -58,7 +58,7 @@ impl SignerHttpRequest {
 }
 
 /// Decode the HTTP request payload into its headers and body.
-/// Returns (verb, path, table of headers, body_offset) on success
+/// Returns a `SignerHttpRequest` (verb, path, table of headers, body_offset) on success.
 pub fn decode_http_request(payload: &[u8]) -> Result<SignerHttpRequest, EventError> {
     // realistically, there won't be more than 32 headers
     let mut headers_buf = [httparse::EMPTY_HEADER; MAX_HTTP_HEADERS];
