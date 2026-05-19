@@ -228,7 +228,7 @@ fn pox_lock_increase_v2(
 /// - Returns Error::PoxExtendNotLocked if this function was called on an account
 ///   which isn't locked. This *should* have been checked by the PoX v2 contract,
 ///   so this should surface in a panic.
-pub fn pox_lock_extend_v2(
+fn pox_lock_extend_v2(
     db: &mut ClarityDatabase,
     principal: &PrincipalData,
     unlock_burn_height: u64,
