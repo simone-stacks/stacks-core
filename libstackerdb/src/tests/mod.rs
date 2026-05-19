@@ -24,6 +24,24 @@ use stacks_common::util::secp256k1::MessageSignature;
 use crate::*;
 
 #[test]
+fn test_stackerdb_chunk_data_consensus_codec_round_trip() {
+    let original = StackerDBChunkData {
+        slot_id: 0x0a0b0c0d,
+        slot_version: 0x11223344,
+        sig: MessageSignature([0xaa; 65]),
+        data: vec![0xde, 0xad, 0xbe, 0xef, 0x00, 0xff],
+    };
+    let bytes = original.serialize_to_vec();
+    // Empty / no-op serialize would leave bytes empty; the underflow check below traps that.
+    assert!(!bytes.is_empty(), "serialize must write bytes");
+    let decoded = StackerDBChunkData::consensus_deserialize(&mut &bytes[..]).unwrap();
+    assert_eq!(decoded.slot_id, original.slot_id);
+    assert_eq!(decoded.slot_version, original.slot_version);
+    assert_eq!(decoded.sig.0, original.sig.0);
+    assert_eq!(decoded.data, original.data);
+}
+
+#[test]
 fn test_stackerdb_slot_metadata_sign_verify() {
     let pk = StacksPrivateKey::random();
     let addr = StacksAddress::from_public_keys(
