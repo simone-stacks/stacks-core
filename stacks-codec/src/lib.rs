@@ -266,3 +266,54 @@ pub const PEER_ADDRESS_ENCODED_SIZE: u32 = 16;
 
 pub const HASH160_ENCODED_SIZE: u32 = 20;
 pub const MESSAGE_SIGNATURE_ENCODED_SIZE: u32 = 65;
+
+#[cfg(test)]
+mod tests {
+    use crate::*;
+
+    fn encode_vec_u32_len_prefix(len: u32, items: &[u32]) -> Vec<u8> {
+        let mut buf = Vec::with_capacity(4 + items.len() * 4);
+        buf.extend_from_slice(&len.to_be_bytes());
+        for x in items {
+            buf.extend_from_slice(&x.to_be_bytes());
+        }
+        buf
+    }
+
+    #[test]
+    fn read_next_at_most_enforces_length_bound() {
+        // len < max: succeeds with the decoded items.
+        let bytes = encode_vec_u32_len_prefix(3, &[10, 20, 30]);
+        let v: Vec<u32> = read_next_at_most(&mut &bytes[..], 5).unwrap();
+        assert_eq!(v, vec![10, 20, 30]);
+
+        // len == max: succeeds (the bound is inclusive: `len > max` is what rejects).
+        let bytes = encode_vec_u32_len_prefix(5, &[1, 2, 3, 4, 5]);
+        let v: Vec<u32> = read_next_at_most(&mut &bytes[..], 5).unwrap();
+        assert_eq!(v, vec![1, 2, 3, 4, 5]);
+
+        // len > max: errors with DeserializeError.
+        let bytes = encode_vec_u32_len_prefix(6, &[1, 2, 3, 4, 5, 6]);
+        let r: Result<Vec<u32>, Error> = read_next_at_most(&mut &bytes[..], 5);
+        assert!(
+            matches!(r, Err(Error::DeserializeError(_))),
+            "expected DeserializeError, got {r:?}"
+        );
+    }
+
+    #[test]
+    fn read_next_exact_enforces_exact_length() {
+        // len == num_items: succeeds.
+        let bytes = encode_vec_u32_len_prefix(5, &[1, 2, 3, 4, 5]);
+        let v: Vec<u32> = read_next_exact(&mut &bytes[..], 5).unwrap();
+        assert_eq!(v, vec![1, 2, 3, 4, 5]);
+
+        // len != num_items: errors.
+        let bytes = encode_vec_u32_len_prefix(3, &[10, 20, 30]);
+        let r: Result<Vec<u32>, Error> = read_next_exact(&mut &bytes[..], 5);
+        assert!(
+            matches!(r, Err(Error::DeserializeError(_))),
+            "expected DeserializeError, got {r:?}"
+        );
+    }
+}
