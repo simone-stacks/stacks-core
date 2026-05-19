@@ -479,11 +479,6 @@ impl RawConfigFile {
             toml::from_str(data).map_err(|e| ConfigError::ParseError(format!("{e:?}")))?;
         Ok(config)
     }
-    /// load the config from a file and parse it
-    #[allow(dead_code)]
-    pub fn load_from_file(path: &str) -> Result<Self, ConfigError> {
-        Self::try_from(&PathBuf::from(path))
-    }
 }
 
 impl TryFrom<&PathBuf> for RawConfigFile {
