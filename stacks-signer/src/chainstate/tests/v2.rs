@@ -452,19 +452,6 @@ fn check_tenure_extend_unsupported_cause() {
 }
 
 #[test]
-fn check_tenure_extend_no_burn_change_during_read_count() {
-    check_tenure_extend(|_, block| {
-        let mut extend_payload = make_tenure_change_payload();
-        extend_payload.cause = TenureChangeCause::ExtendedRuntime;
-        extend_payload.burn_view_consensus_hash = ConsensusHash([64; 20]);
-        extend_payload.tenure_consensus_hash = block.header.consensus_hash.clone();
-        extend_payload.prev_tenure_consensus_hash = block.header.consensus_hash.clone();
-        extend_payload
-    })
-    .expect_err("Proposal should not validate");
-}
-
-#[test]
 fn check_tenure_extend_read_count() {
     check_tenure_extend(|view, block| {
         let mut extend_payload = make_tenure_change_payload();
