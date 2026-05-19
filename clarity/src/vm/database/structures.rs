@@ -544,7 +544,7 @@ impl<'db, 'conn> STXBalanceSnapshot<'db, 'conn> {
     }
 
     /// Increase the account's current lock to `new_total_locked`.
-    /// Panics if `self` was not locked by V2 PoX.
+    /// Returns `Err` if `self` was not locked by V2 PoX.
     pub fn increase_lock_v2(&mut self, new_total_locked: u128) -> Result<(), VmExecutionError> {
         let unlocked = self.unlock_available_tokens_if_any()?;
         if unlocked > 0 {
@@ -763,7 +763,7 @@ impl<'db, 'conn> STXBalanceSnapshot<'db, 'conn> {
     }
 
     /// Increase the account's current lock to `new_total_locked`.
-    /// Panics if `self` was not locked by V3 PoX.
+    /// Returns `Err` if `self` was not locked by V3 PoX.
     pub fn increase_lock_v3(&mut self, new_total_locked: u128) -> Result<(), VmExecutionError> {
         let unlocked = self.unlock_available_tokens_if_any()?;
         if unlocked > 0 {
