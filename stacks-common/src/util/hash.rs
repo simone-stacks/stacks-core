@@ -312,6 +312,11 @@ impl DoubleSha256 {
     #[inline]
     pub fn into_le(self) -> Uint256 {
         let DoubleSha256(data) = self;
+        // SAFETY: source `[u8; 32]` and target `[u64; 4]` have the same size
+        // (32 bytes) and both are POD with no invalid bit patterns. The
+        // transmute reinterprets the bytes as four u64 limbs in the host's
+        // native byte order; the subsequent `to_le()` loop normalizes each
+        // limb to little-endian so the result is host-independent.
         let mut ret: [u64; 4] = unsafe { mem::transmute(data) };
         for x in ret.iter_mut() {
             *x = x.to_le();
@@ -324,6 +329,11 @@ impl DoubleSha256 {
     pub fn into_be(self) -> Uint256 {
         let DoubleSha256(mut data) = self;
         data.reverse();
+        // SAFETY: source `[u8; 32]` and target `[u64; 4]` have the same size
+        // (32 bytes) and both are POD with no invalid bit patterns. The
+        // transmute reinterprets the (reversed) bytes as four u64 limbs in
+        // the host's native byte order; the subsequent `to_be()` loop
+        // normalizes each limb to big-endian so the result is host-independent.
         let mut ret: [u64; 4] = unsafe { mem::transmute(data) };
         for x in ret.iter_mut() {
             *x = x.to_be();
