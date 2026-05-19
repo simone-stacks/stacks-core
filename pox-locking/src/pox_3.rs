@@ -60,7 +60,7 @@ pub(crate) fn is_read_only(func_name: &str) -> bool {
 }
 
 /// Lock up STX for PoX for a time.  Does NOT touch the account nonce.
-pub fn pox_lock_v3(
+fn pox_lock_v3(
     db: &mut ClarityDatabase,
     principal: &PrincipalData,
     lock_amount: u128,
