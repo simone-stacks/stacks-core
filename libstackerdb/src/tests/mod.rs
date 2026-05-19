@@ -68,6 +68,27 @@ fn test_stackerdb_slot_metadata_sign_verify() {
 }
 
 #[test]
+fn test_stackerdb_chunk_data_sign_verify() {
+    let pk = StacksPrivateKey::random();
+    let addr = StacksAddress::from_public_keys(
+        C32_ADDRESS_VERSION_MAINNET_SINGLESIG,
+        &AddressHashMode::SerializeP2PKH,
+        1,
+        &vec![StacksPublicKey::from_private(&pk)],
+    )
+    .unwrap();
+    let bad_addr = StacksAddress::new(0x01, Hash160([0x01; 20])).unwrap();
+
+    let mut chunk_data = StackerDBChunkData::new(7, 3, vec![0xab; 64]);
+    chunk_data.sign(&pk).unwrap();
+
+    // The chunk verifies against the address whose private key signed it.
+    assert!(chunk_data.verify(&addr).unwrap());
+    // The chunk does not verify against an unrelated address.
+    assert!(!chunk_data.verify(&bad_addr).unwrap());
+}
+
+#[test]
 fn test_stackerdb_paths() {
     let pk = StacksPrivateKey::from_hex(
         "4bbe4e7dc879afedf4bf258a7385cf78ccf3a68a77f9cfc624f433d009f812f901",
