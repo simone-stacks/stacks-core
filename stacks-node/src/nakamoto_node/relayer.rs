@@ -129,9 +129,6 @@ pub struct LastCommit {
     stacks_tip: StacksBlockId,
     /// the tenure consensus hash for the tip's tenure
     tenure_consensus_hash: ConsensusHash,
-    /// the start-block hash of the tip's tenure
-    #[allow(dead_code)]
-    start_block_hash: BlockHeaderHash,
     /// What is the epoch in which this was sent?
     epoch_id: StacksEpochId,
     /// commit txid (to be filled in on submission)
@@ -223,7 +220,6 @@ impl LastCommit {
         burn_tip: BlockSnapshot,
         stacks_tip: StacksBlockId,
         tenure_consensus_hash: ConsensusHash,
-        start_block_hash: BlockHeaderHash,
         epoch_id: StacksEpochId,
     ) -> Self {
         Self {
@@ -231,7 +227,6 @@ impl LastCommit {
             burn_tip,
             stacks_tip,
             tenure_consensus_hash,
-            start_block_hash,
             epoch_id,
             txid: None,
         }
@@ -1285,9 +1280,6 @@ impl RelayerThread {
             sort_tip,
             stacks_tip,
             highest_tenure_start_block_header.consensus_hash,
-            highest_tenure_start_block_header
-                .anchored_header
-                .block_hash(),
             target_epoch.epoch_id,
         ))
     }
